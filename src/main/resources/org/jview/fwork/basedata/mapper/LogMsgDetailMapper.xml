@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.jview.fwork.basedata.mapper.LogMsgDetailMapper" >
+  <resultMap id="BaseResultMap" type="org.jview.fwork.basedata.model.LogMsgDetailPO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="cid" property="cid" jdbcType="DECIMAL" />
+    <result column="log_msg_id" property="logMsgId" jdbcType="DECIMAL" />
+    <result column="tos" property="tos" jdbcType="VARCHAR" />
+    <result column="send_date" property="sendDate" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    cid, log_msg_id, tos, send_date, remark
+  </sql>
+  
+  <insert id="insertLogMsgDetail">
+	  	<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="cid">
+			select _nextval('_tf_logMsgDetail_cid_seq')
+		</selectKey>
+		 insert into tf_log_msg_detail
+		(cid
+			,log_msg_id
+			,tos
+			,send_date
+			,remark
+			,run_time
+			)
+		 values 
+		(#{cid,jdbcType=DECIMAL}
+			,#{logMsgId,jdbcType=DECIMAL}
+			,#{tos,jdbcType=VARCHAR}
+			,#{sendDate,jdbcType=DATE}
+			,#{remark,jdbcType=VARCHAR}
+			,#{runTime,jdbcType=DECIMAL}
+			);
+  </insert>
+  
+  <insert id="insertBatch" parameterType="java.util.List">
+	 insert into tf_log_msg_detail
+		(cid
+			,log_msg_id
+			,tos
+			,send_date
+			,remark
+			,run_time
+			) values
+		 <foreach collection="list" item="item" index="index" separator=",">
+			(_nextval('_tf_logMsgDetail_cid_seq')
+			,#{item.logMsgId,jdbcType=DECIMAL}
+			,#{item.tos,jdbcType=VARCHAR}
+			,#{item.sendDate,jdbcType=DATE}
+			,#{item.remark,jdbcType=VARCHAR}
+			,#{item.runTime,jdbcType=DECIMAL}
+			)
+		</foreach>	
+  </insert>
+  
+   <update id="updateBatch" parameterType="java.util.List">
+   	 <foreach collection="list" item="item" index="index" open="begin" close="end;" separator=";">
+   		update tf_log_msg_detail set 
+			log_msg_id=	#{item.logMsgId,jdbcType=DECIMAL}
+			,tos=	#{item.tos,jdbcType=VARCHAR}
+			,send_date=	#{item.sendDate,jdbcType=DATE}
+			,remark=	#{item.remark,jdbcType=VARCHAR}
+			,run_time=	#{item.runTime,jdbcType=DECIMAL}
+		 where cid=#{item.cid,jdbcType=DECIMAL}
+   	 </foreach>
+   </update>
+</mapper>

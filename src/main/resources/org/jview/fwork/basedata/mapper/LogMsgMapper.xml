@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.jview.fwork.basedata.mapper.LogMsgMapper" >
+  <resultMap id="BaseResultMap" type="org.jview.fwork.basedata.model.LogMsgPO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="cid" property="cid" jdbcType="DECIMAL" />
+    <result column="msg_code" property="msgCode" jdbcType="VARCHAR" />
+    <result column="project_id" property="projectId" jdbcType="DECIMAL" />
+    <result column="user_id" property="userId" jdbcType="DECIMAL" />
+    <result column="msg_type" property="msgType" jdbcType="INTEGER" />
+    <result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+    <result column="send_flag" property="sendFlag" jdbcType="INTEGER" />
+    <result column="send_type" property="sendType" jdbcType="INTEGER" />
+    <result column="mail_count" property="mailCount" jdbcType="INTEGER" />
+    <result column="send_count" property="sendCount" jdbcType="INTEGER" />
+    <result column="tos" property="tos" jdbcType="VARCHAR" />
+    <result column="ccs" property="ccs" jdbcType="VARCHAR" />
+    <result column="bccs" property="bccs" jdbcType="VARCHAR" />
+    <result column="fail_mails" property="failMails" jdbcType="VARCHAR" />
+    <result column="exceptions" property="exceptions" jdbcType="VARCHAR" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="attach_path" property="attachPath" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    cid, msg_code, project_id, user_id, msg_type, send_time, send_flag, send_type, mail_count, 
+    send_count, tos, ccs, bccs, fail_mails, exceptions, title, content, attach_path, 
+    end_time
+  </sql>
+  
+  <insert id="insertLogMsg">
+	  	<selectKey resultType="java.lang.Long" order="BEFORE" keyProperty="cid">
+			select _nextval('_tf_logMsg_cid_seq')
+		</selectKey>
+		 insert into tf_log_msg
+		(cid
+			,msg_code
+			,project_id
+			,user_id
+			,msg_type
+			,send_time
+			,send_flag
+			,send_type
+			,mail_count
+			,send_count
+			,tos
+			,ccs
+			,bccs
+			,fail_mails
+			,exceptions
+			,title
+			,content
+			,attach_path
+			,end_time
+			,create_date
+			,create_user
+			,template
+			)
+		 values 
+		(#{cid,jdbcType=DECIMAL}
+			,#{msgCode,jdbcType=VARCHAR}
+			,#{projectId,jdbcType=DECIMAL}
+			,#{userId,jdbcType=DECIMAL}
+			,#{msgType,jdbcType=DECIMAL}
+			,#{sendTime,jdbcType=DATE}
+			,#{sendFlag,jdbcType=DECIMAL}
+			,#{sendType,jdbcType=DECIMAL}
+			,#{mailCount,jdbcType=DECIMAL}
+			,#{sendCount,jdbcType=DECIMAL}
+			,#{tos,jdbcType=VARCHAR}
+			,#{ccs,jdbcType=VARCHAR}
+			,#{bccs,jdbcType=VARCHAR}
+			,#{failMails,jdbcType=VARCHAR}
+			,#{exceptions,jdbcType=VARCHAR}
+			,#{title,jdbcType=VARCHAR}
+			,#{content,jdbcType=VARCHAR}
+			,#{attachPath,jdbcType=VARCHAR}
+			,#{endTime,jdbcType=DATE}
+			,#{createDate,jdbcType=DATE}
+			,#{createUser,jdbcType=DECIMAL}
+			,#{template,jdbcType=VARCHAR}
+			);
+  </insert>
+  
+  <insert id="insertBatch" parameterType="java.util.List">
+	 insert into tf_log_msg
+		(cid
+			,msg_code
+			,project_id
+			,user_id
+			,msg_type
+			,send_time
+			,send_flag
+			,send_type
+			,mail_count
+			,send_count
+			,tos
+			,ccs
+			,bccs
+			,fail_mails
+			,exceptions
+			,title
+			,content
+			,attach_path
+			,end_time
+			,create_date
+			,create_user
+			,template
+			)
+		 values 
+		 <foreach collection="list" item="item" index="index" separator=",">
+		(_nextval('_tf_logMsg_cid_seq')
+			,#{item.msgCode,jdbcType=VARCHAR}
+			,#{item.projectId,jdbcType=DECIMAL}
+			,#{item.userId,jdbcType=DECIMAL}
+			,#{item.msgType,jdbcType=DECIMAL}
+			,#{item.sendTime,jdbcType=DATE}
+			,#{item.sendFlag,jdbcType=DECIMAL}
+			,#{item.sendType,jdbcType=DECIMAL}
+			,#{item.mailCount,jdbcType=DECIMAL}
+			,#{item.sendCount,jdbcType=DECIMAL}
+			,#{item.tos,jdbcType=VARCHAR}
+			,#{item.ccs,jdbcType=VARCHAR}
+			,#{item.bccs,jdbcType=VARCHAR}
+			,#{item.failMails,jdbcType=VARCHAR}
+			,#{item.exceptions,jdbcType=VARCHAR}
+			,#{item.title,jdbcType=VARCHAR}
+			,#{item.content,jdbcType=VARCHAR}
+			,#{item.attachPath,jdbcType=VARCHAR}
+			,#{item.endTime,jdbcType=DATE}
+			,#{item.createDate,jdbcType=DATE}
+			,#{item.createUser,jdbcType=DECIMAL}
+			,#{item.template,jdbcType=VARCHAR}
+			)
+		</foreach>	
+  </insert>
+  
+   <update id="updateBatch" parameterType="java.util.List">
+   	 <foreach collection="list" item="item" index="index" open="begin" close="end;" separator=";">
+   		update tf_log_msg set 
+			msg_code=	#{item.item.msgCode,jdbcType=VARCHAR}
+			,project_id=	#{item.projectId,jdbcType=DECIMAL}
+			,user_id=	#{item.userId,jdbcType=DECIMAL}
+			,msg_type=	#{item.msgType,jdbcType=DECIMAL}
+			,send_time=	#{item.sendTime,jdbcType=DATE}
+			,send_flag=	#{item.sendFlag,jdbcType=DECIMAL}
+			,send_type=	#{item.sendType,jdbcType=DECIMAL}
+			,mail_count=	#{item.mailCount,jdbcType=DECIMAL}
+			,send_count=	#{item.sendCount,jdbcType=DECIMAL}
+			,tos=	#{item.tos,jdbcType=VARCHAR}
+			,ccs=	#{item.ccs,jdbcType=VARCHAR}
+			,bccs=	#{item.bccs,jdbcType=VARCHAR}
+			,fail_mails=	#{item.failMails,jdbcType=VARCHAR}
+			,exceptions=	#{item.exceptions,jdbcType=VARCHAR}
+			,title=	#{item.title,jdbcType=VARCHAR}
+			,content=	#{item.content,jdbcType=VARCHAR}
+			,attach_path=	#{item.attachPath,jdbcType=VARCHAR}
+			,end_time=	#{item.endTime,jdbcType=DATE}
+			,create_date=	#{item.createDate,jdbcType=DATE}
+			,create_user=	#{item.createUser,jdbcType=DECIMAL}
+			,template=	#{item.template,jdbcType=VARCHAR}
+		 where cid=#{item.cid,jdbcType=DECIMAL}
+   	 </foreach>
+   </update>
+</mapper>

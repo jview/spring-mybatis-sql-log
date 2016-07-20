@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xmlns:task="http://www.springframework.org/schema/task"  
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd  
+    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">  
+
+	<!-- 線程池 -->
+	<bean id ="taskExecutorSchedule"  class ="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" >
+		<!-- 线程池维护线程的最少数量 -->
+	    <property name ="corePoolSize" value ="10" /> 
+	    <!-- 线程池维护线程所允许的空闲时间 -->
+	    <property name ="keepAliveSeconds" value ="300" />
+	    <!--  线程池维护线程的最大数量 -->
+	    <property name ="maxPoolSize" value ="30" />
+	    <!-- 线程池所使用的缓冲队列 -->
+	    <property name ="queueCapacity" value ="100" /> 
+	  </bean> 
+	  
+
+ 	<!-- 启动触发器的配置开始 -->
+	<bean name="startQuertz" lazy-init="false" autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="myJobLoadDataTrigger" />
+				<ref bean="myJobSendMsgTrigger"/>
+			</list>
+		</property>
+	</bean>
+	<!-- 启动触发器的配置结束 -->
+
+
+	<!-- 截入消息數據,5分鐘一次 -->
+	<bean id="myJobLoadDataTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="myJobLoadData" />
+		</property>
+		<property name="cronExpression">
+			<value>0 */1 * * * ?</value>
+		</property>
+	</bean>
+	<!-- 發送郵件 10秒一次 -->
+	<bean id="myJobSendMsgTrigger"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="myJobSendMsg" />
+		</property>
+		<property name="cronExpression">
+			<value>*/5 * * * * ?</value>
+		</property>
+	</bean>
+	<!-- 调度的配置结束 -->
+
+	<!-- job的配置开始 -->
+	<bean id="myJobLoadData"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="msgSendTask" />
+		</property>
+		<property name="targetMethod">
+			<value>loadMsgData</value>
+		</property>
+	</bean>
+	<bean id="myJobSendMsg"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject">
+			<ref bean="msgSendTask" />
+		</property>
+		<property name="targetMethod">
+			<value>sendMsg</value>
+		</property>
+	</bean>
+	<!-- job的配置结束 -->
+	
+	
+
+	<!-- 工作的bean -->
+	<bean id="msgSendTask" class="org.jview.fwork.schedule.msg.task.MsgSendTask" >
+		<property name="msgType" value="2"></property>
+		<property name="runningCount" value="20"></property>
+		<property name="fromMail" value="ycstest@126.com"></property>
+	</bean>
+</beans>

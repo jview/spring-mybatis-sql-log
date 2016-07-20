@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="org.jview.fwork.basedata.mapper.LogDbMapper" >
+  <resultMap id="BaseResultMap" type="org.jview.fwork.basedata.model.LogDbPO" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    <id column="cid" property="cid" jdbcType="DECIMAL" />
+    <result column="project_id" property="projectId" jdbcType="DECIMAL" />
+    <result column="service_id" property="serviceId" jdbcType="DECIMAL" />
+    <result column="user_id" property="userId" jdbcType="DECIMAL" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="model_id" property="modelId" jdbcType="DECIMAL" />
+    <result column="create_date" property="createDate" jdbcType="TIMESTAMP" />
+    <result column="log_level" property="logLevel" jdbcType="INTEGER" />
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="json_param" property="jsonParam" jdbcType="VARCHAR" />
+    <result column="json_param_opt_id" property="jsonParamOptId" jdbcType="DECIMAL" />
+    <result column="json_ret" property="jsonRet" jdbcType="VARCHAR" />
+    <result column="json_ret_opt_id" property="jsonRetOptId" jdbcType="DECIMAL" />
+    <result column="flag" property="flag" jdbcType="VARCHAR" />
+    <result column="descs" property="descs" jdbcType="VARCHAR" />
+    <result column="run_time" property="runTime" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    <!--
+      WARNING - @mbggenerated
+    -->
+    cid, project_id, service_id, user_id, user_name, model_id, create_date, log_level, 
+    title, json_param, json_param_opt_id, json_ret, json_ret_opt_id, flag, descs, run_time, 
+    remark
+  </sql>
+</mapper>
