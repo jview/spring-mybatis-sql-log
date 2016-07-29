@@ -89,8 +89,8 @@ public class LogServiceAspect {
 			returnValue = pjp.proceed();
 			long runTime=System.currentTimeMillis() - time;
 			if(returnValue!=null && !LogService.noRet.equals(logService.descs())){
-				returnValue = removeDatas(logService.descs(), returnValue);//descs为noDatas的处理
-				pointMap.put("returnValue", gson.toJson(returnValue));
+				Object nodatasRet = removeDatas(logService.descs(), returnValue);//descs为noDatas的处理
+				pointMap.put("returnValue", gson.toJson(nodatasRet));
 			}
 			this.logSqlManager.addLogAsync(startTime, runTime, null, pointMap);
 		}
