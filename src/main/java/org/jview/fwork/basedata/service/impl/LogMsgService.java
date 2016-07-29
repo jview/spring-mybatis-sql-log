@@ -55,7 +55,7 @@ public class LogMsgService extends BaseService<LogMsgPO> implements ILogMsgServi
 		return mapper;
 	}
 	
-	@LogService(title="logMsg.findLogMsgList", author="cjh", calls="selectByExample", descs=LogService.noDatas)
+	@LogService(title="logMsg.findLogMsgList", author="cjh", calls="LogMsgMapper.selectByExample", descs=LogService.noDatas)
 	public RetResult<LogMsgPO> findLogMsgList(Date sendTime, Integer msgType, Integer sendFlag) {
 		logger.info("----findLogMsgList--sendTime="+sendTime+" msgType="+msgType+" sendFlag="+sendFlag);
 		RetResult<LogMsgPO> ret = new RetResult<LogMsgPO>();
@@ -89,7 +89,7 @@ public class LogMsgService extends BaseService<LogMsgPO> implements ILogMsgServi
 	}
 
 	@Override
-	@LogService(title="logMsg.findPageByLogMsg", author="cjh", calls="selectByExample", descs=LogService.noDatas)
+	@LogService(title="logMsg.findPageByLogMsg", author="cjh", calls="LogMsgMapper.selectByExample", descs=LogService.noDatas)
 	public PageVO<LogMsgPO> findPageByLogMsg(LogMsgPO logMsg, PageVO<LogMsgPO> page) {
 		logger.info("----findPageByLogMsg--");
 		Example example = new Example(LogMsgPO.class);
