@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.time.DateUtils;
+import org.jview.fwork.basedata.logger.LogService;
 import org.jview.fwork.basedata.mapper.LogMsgDetailMapper;
 import org.jview.fwork.basedata.model.LogMsgDetailPO;
 import org.jview.fwork.basedata.service.ILogMsgDetailService;
@@ -136,7 +137,7 @@ public class LogMsgDetailService extends BaseService<LogMsgDetailPO> implements 
     }
     
  
-	
+    @LogService(title="logMsgDetail.create", author="cjh", calls="LogMsgDetailMapper.insertLogMsgDetail")
 	public RetResult<Long> create(LogMsgDetailPO record){
 		logger.info("----create--");
 		RetResult<Long> ret = new RetResult<>();
@@ -162,7 +163,7 @@ public class LogMsgDetailService extends BaseService<LogMsgDetailPO> implements 
 	}
 	
 
-	
+    @LogService(title="logMsg.create", author="cjh", calls="LogMsgMapper.insertLogMsg")
 	public void insertBatch(List<LogMsgDetailPO> msgList) throws Exception{
 		int batchSize=800;
 		List<LogMsgDetailPO> cacheList=new ArrayList<>();
@@ -181,7 +182,8 @@ public class LogMsgDetailService extends BaseService<LogMsgDetailPO> implements 
 		}
 		
 	}
-	
+    
+    @LogService(title="logMsgDetail.updateBatch", author="cjh", calls="LogMsgDetailMapper.updateBatch")
 	public void updateBatch(List<LogMsgDetailPO> msgList) throws Exception{
 		int batchSize=800;
 		List<LogMsgDetailPO> cacheList=new ArrayList<>();
@@ -199,7 +201,7 @@ public class LogMsgDetailService extends BaseService<LogMsgDetailPO> implements 
 		}
 		
 	}
-	
+    @LogService(title="logMsgDetail.update", author="cjh", calls="LogMsgDetailMapper.updateByPrimaryKey")
 	public RetResult<Long> update(LogMsgDetailPO record){
 		logger.info("----update--");
 		RetResult<Long> ret = new RetResult<>();
