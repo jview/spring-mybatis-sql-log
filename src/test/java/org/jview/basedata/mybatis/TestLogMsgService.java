@@ -59,7 +59,7 @@ public class TestLogMsgService extends TestCase{
 	@Test
 	public void testFindLogMsgList(){
 		Date date = new Date();
-		date=DateUtils.addHours(date, -1);
+		date=DateUtils.addDays(date, -10);
 		
 		RetResult<LogMsgPO> ret=logMsgService.findLogMsgList(date, 2, 0);
 		System.out.println("flag="+ret.getFlag()+" size="+ret.getSize());

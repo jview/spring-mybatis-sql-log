@@ -1,8 +1,10 @@
 package org.jview.fwork.basedata.logger;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
@@ -16,8 +18,10 @@ import org.jview.fwork.basedata.service.ILogSqlManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import ai.yc.common.core.entity.BaseEntity;
-import ai.yc.common.core.util.ObjectToMapUtil;
+import ai.yc.common.core.data.RetResult;
+import ai.yc.common.core.page.PageVO;
+
+import com.google.gson.Gson;
 
 /**
  * 用于记录接口对应的作者及标题
@@ -84,12 +88,47 @@ public class LogServiceAspect {
 			pointMap.put("threadId",String.valueOf(Thread.currentThread().getId()));
 			returnValue = pjp.proceed();
 			long runTime=System.currentTimeMillis() - time;
+			if(returnValue!=null && !LogService.noRet.equals(logService.descs())){
+				returnValue = removeDatas(logService.descs(), returnValue);//descs为noDatas的处理
+				pointMap.put("returnValue", gson.toJson(returnValue));
+			}
 			this.logSqlManager.addLogAsync(startTime, runTime, null, pointMap);
 		}
 		catch (Exception e) {
 			long runTime=System.currentTimeMillis() - time;
 			this.logSqlManager.addLogAsync(startTime, runTime, e, pointMap);
 			throw e;
+		}
+		return returnValue;
+	}
+
+	/**
+	 * descs为noDatas的处理，如果返回对象是PageVO,或RetResult则去掉datas以减少日志量
+	 * @param descs
+	 * @param returnValue
+	 * @return
+	 */
+	private Object removeDatas(String descs, Object returnValue) {
+		if(!LogService.noDatas.equals(descs)){
+			return returnValue;
+		}
+		if(returnValue instanceof RetResult){
+			RetResult ret=(RetResult)returnValue;
+			RetResult ret2=new RetResult(ret);
+			ret2.setDataList(new ArrayList());
+			ret2.setMsgBody("size:"+ret.getSize());
+			returnValue=ret2;
+		}
+		else if(returnValue instanceof PageVO){
+			PageVO page=(PageVO)returnValue;
+			Map<String, Object> pageMap=new HashMap<String, Object>();
+			pageMap.put("total", page.getTotal());
+			pageMap.put("pageSize", page.getPageSize());
+			pageMap.put("pageLimit", page.getPageLimit());
+			pageMap.put("totalPage", page.getTotalPage());
+			pageMap.put("pageBegin", page.getPageBegin());
+			pageMap.put("pageEnd", page.getPageEnd());
+			returnValue=pageMap;
 		}
 		return returnValue;
 	}
@@ -105,20 +144,21 @@ public class LogServiceAspect {
 		infoMap.put("staticPart", ""+joinPoint.getStaticPart());
 		return infoMap;
 	}
-
+	private static Gson gson = new Gson();
 	private String getArgs(Object[] args) {
 		String info = "";
 		Object arg=null;
 		for (int i = 0; i < args.length; i++) {
 			arg=args[i];
 			if(arg!=null){
-				if(arg instanceof BaseEntity){
-					try {
-						arg= ObjectToMapUtil.getDataMapByPropName(arg, null, null);
-					} catch (Exception e) {
-						logger.warn("----getArgs--"+arg, e);
-					}
-				}
+				arg=gson.toJson(arg);
+//				if(arg instanceof BaseEntity){
+//					try {
+//						arg= ObjectToMapUtil.getDataMapByPropName(arg, null, null);
+//					} catch (Exception e) {
+//						logger.warn("----getArgs--"+arg, e);
+//					}
+//				}
 			}
 			info +=   i + ":" + arg + ", ";
 		}

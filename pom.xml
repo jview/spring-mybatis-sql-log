@@ -468,6 +468,22 @@
 		    <artifactId>gson</artifactId>
 		    <version>2.7</version>
 		</dependency>
+		
+		<dependency>
+		  <groupId>com.fasterxml.jackson.core</groupId>
+		  <artifactId>jackson-core</artifactId>
+		  <version>2.5.2</version>
+		</dependency>
+		<dependency>
+		  <groupId>com.fasterxml.jackson.core</groupId>
+		  <artifactId>jackson-databind</artifactId>
+		  <version>2.5.2</version>
+		</dependency>
+		<dependency>
+		  <groupId>com.fasterxml.jackson.core</groupId>
+		  <artifactId>jackson-annotations</artifactId>
+		  <version>2.5.2</version>
+		</dependency>
 	
 		
 		<!-- dubbo 需要的jar start -->
@@ -489,7 +505,6 @@
 				<version>0.3</version>
 			</dependency>
 		<!-- dubbo 需要的jar end -->
-
 	</dependencies>
 
 </project>

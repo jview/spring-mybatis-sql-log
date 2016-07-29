@@ -112,6 +112,8 @@ public class LogSqlManagerService implements ILogSqlManager {
 		else{
 			model=this.prepareModel(paramMap);
 			logDb.setServiceId(0l);
+			logDb.setJsonParam((String)paramMap.get("args"));
+			logDb.setJsonRet((String)paramMap.get("returnValue"));
 			LogService logService=(LogService)paramMap.get("logService");
 			if(logService!=null){
 				logDb.setTitle(logService.title());
@@ -137,29 +139,35 @@ public class LogSqlManagerService implements ILogSqlManager {
 		}
 		
 		
-		
 		if(modelService!=null){
-			String key=model.getClassName()+"."+model.getFuncCode();
-			Long modelId=modelIdMap.get(key);
-			if(modelId==null){
-				RetResult<ModelPO> ret=this.modelService.findModelByCode(model.getClassName(), model.getFuncCode());
-		//		logger.info("----findModelCode="+model.getClassName()+"."+ model.getFuncCode()+" flag="+ret.getFlag()+" "+ret.getMsgBody()+" size="+ret.getSize());
-				if(ret.isSuccess() && ret.getSize()>0){
-					logDb.setModelId(ret.getFirstData().getCid());
-				}
-				else{
-		//			System.out.println("----insertModel---");
-					this.modelService.insertModel(model);
-					logDb.setModelId(model.getCid());
-				}
-				modelIdMap.put(key, logDb.getModelId());
-			}
-			else{
-				logDb.setModelId(modelId);
-			}
+			Long modelId=initModelId(model);
+			logDb.setModelId(modelId);
 		}
 
 		this.logDbService.log(logDb);
+	}
+
+	/**
+	 * @param logDb
+	 * @param model
+	 */
+	private Long initModelId(ModelPO model) {
+		String key=model.getPackageName()+"."+model.getClassName()+"."+model.getFuncCode();
+		Long modelId=modelIdMap.get(key);
+		if(modelId==null){
+			RetResult<ModelPO> ret=this.modelService.findModelByCode(model.getClassName(), model.getFuncCode());
+			if(ret.isSuccess() && ret.getSize()>0){
+				modelId=ret.getFirstData().getCid();
+			}
+			else{
+				this.modelService.insertModel(model);
+				modelId=model.getCid();
+			}
+			modelIdMap.put(key, modelId);
+		}
+			
+		return modelId;
+		
 	}
 	
 

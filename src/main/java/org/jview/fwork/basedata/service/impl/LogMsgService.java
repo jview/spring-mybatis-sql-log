@@ -55,6 +55,7 @@ public class LogMsgService extends BaseService<LogMsgPO> implements ILogMsgServi
 		return mapper;
 	}
 	
+	@LogService(title="logMsg.findLogMsgList", author="cjh", calls="selectByExample", descs=LogService.noDatas)
 	public RetResult<LogMsgPO> findLogMsgList(Date sendTime, Integer msgType, Integer sendFlag) {
 		logger.info("----findLogMsgList--sendTime="+sendTime+" msgType="+msgType+" sendFlag="+sendFlag);
 		RetResult<LogMsgPO> ret = new RetResult<LogMsgPO>();
@@ -88,7 +89,7 @@ public class LogMsgService extends BaseService<LogMsgPO> implements ILogMsgServi
 	}
 
 	@Override
-	@LogService(title="logMsg", author="cjh", calls="selectByExample")
+	@LogService(title="logMsg.findPageByLogMsg", author="cjh", calls="selectByExample", descs=LogService.noDatas)
 	public PageVO<LogMsgPO> findPageByLogMsg(LogMsgPO logMsg, PageVO<LogMsgPO> page) {
 		logger.info("----findPageByLogMsg--");
 		Example example = new Example(LogMsgPO.class);
@@ -188,6 +189,7 @@ public class LogMsgService extends BaseService<LogMsgPO> implements ILogMsgServi
     	return ret;
     }
 	
+    @LogService(title="logMsg.create", author="cjh", calls="LogMsgMapper.insertLogMsg")
 	public RetResult<Long> create(LogMsgPO record){
 		logger.info("----create--");
 		long time=System.currentTimeMillis();
@@ -256,6 +258,7 @@ public class LogMsgService extends BaseService<LogMsgPO> implements ILogMsgServi
 			scheduleToDoService.addToDo(key, logMsg);
 	}
 	
+	@LogService(title="logMsg.insertBatch", author="cjh", calls="LogMsgMapper.insertBatch")
 	public void insertBatch(List<LogMsgPO> msgList) throws Exception{
 		int batchSize=800;
 		List<LogMsgPO> cacheList=new ArrayList<>();
@@ -282,6 +285,7 @@ public class LogMsgService extends BaseService<LogMsgPO> implements ILogMsgServi
 		
 	}
 	
+	@LogService(title="logMsg.updateBatch", author="cjh", calls="LogMsgMapper.updateBatch")
 	public void updateBatch(List<LogMsgPO> msgList) throws Exception{
 		int batchSize=800;
 		List<LogMsgPO> cacheList=new ArrayList<>();
@@ -304,6 +308,7 @@ public class LogMsgService extends BaseService<LogMsgPO> implements ILogMsgServi
 		
 	}
 	
+	@LogService(title="logMsg.update", author="cjh", calls="LogMsgMapper.updateByPrimaryKey")
 	public RetResult<Long> update(LogMsgPO record){
 		logger.info("----update--");
 		RetResult<Long> ret = new RetResult<>();
