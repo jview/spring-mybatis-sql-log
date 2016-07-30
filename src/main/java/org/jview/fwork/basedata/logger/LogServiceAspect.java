@@ -151,14 +151,11 @@ public class LogServiceAspect {
 		for (int i = 0; i < args.length; i++) {
 			arg=args[i];
 			if(arg!=null){
-				arg=gson.toJson(arg);
-//				if(arg instanceof BaseEntity){
-//					try {
-//						arg= ObjectToMapUtil.getDataMapByPropName(arg, null, null);
-//					} catch (Exception e) {
-//						logger.warn("----getArgs--"+arg, e);
-//					}
-//				}
+				try {
+					arg=gson.toJson(arg);
+				} catch (Exception e) {
+					arg="arg convert map error:"+arg.toString()+e.getMessage();
+				}
 			}
 			info +=   i + ":" + arg + ", ";
 		}

@@ -3,6 +3,7 @@ package org.jview.fwork.schedule.msg.task;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -98,6 +99,9 @@ public class MsgSendTask  implements Job{
 		Map<Long, Object> runningDataMap=runningMap.get(key);
 		if(dataMap==null){
 			dataMap=new ConcurrentHashMap<Long, Object>();
+		}
+		if(runningDataMap==null){
+			runningDataMap=new HashMap<Long, Object>();
 		}
 		if(obj instanceof LogMsgPO){
 			LogMsgPO logMsg=(LogMsgPO)obj;

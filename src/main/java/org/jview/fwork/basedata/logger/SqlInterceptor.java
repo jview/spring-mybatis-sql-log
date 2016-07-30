@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.ibatis.executor.Executor;
@@ -22,8 +23,9 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.apache.log4j.Logger;
-
 import org.jview.fwork.basedata.service.ILogSqlManager;
+
+import com.google.gson.Gson;
 
 @Intercepts({
 		@Signature(type = Executor.class, method = "update", args = {
@@ -51,11 +53,13 @@ public class SqlInterceptor implements Interceptor {
 		String sqlId = mappedStatement.getId();
 		BoundSql boundSql = mappedStatement.getBoundSql(parameter);
 		Configuration configuration = mappedStatement.getConfiguration();
-		String sql = getSql(configuration, boundSql);
+		HashMap<String, Object> pMap=new HashMap<>();
+		String sql = getSql(configuration, boundSql, pMap);
 		Object returnValue = null;
 		HashMap<String, Object> paramMap=new HashMap<>();
 		try {
 			paramMap.put("threadId",String.valueOf(Thread.currentThread().getId()));
+			paramMap.put("args", gson.toJson(pMap));
 			returnValue = invocation.proceed();
 //			System.out.println("----sql4="+sql);
 //			if(returnValue!=null){
@@ -77,9 +81,9 @@ public class SqlInterceptor implements Interceptor {
 
 	}
 
-	public static String getSql(Configuration configuration, BoundSql boundSql) {
+	public static String getSql(Configuration configuration, BoundSql boundSql, Map<String, Object> paramMap) {
 
-		String sql = showSql(configuration, boundSql);
+		String sql = showSql(configuration, boundSql, paramMap);
 		StringBuilder str = new StringBuilder(100);
 //		str.append(sqlId);
 //		str.append(":");
@@ -90,7 +94,9 @@ public class SqlInterceptor implements Interceptor {
 		return str.toString();
 
 	}
-
+	
+	private static  Gson gson = new Gson();
+	
 	private static String getParameterValue(Object obj) {
 		String value = null;
 
@@ -110,7 +116,7 @@ public class SqlInterceptor implements Interceptor {
 		return value;
 	}
 
-	public static String showSql(Configuration configuration, BoundSql boundSql) {
+	public static String showSql(Configuration configuration, BoundSql boundSql, Map<String, Object> paramMap) {
 		Object parameterObject = boundSql.getParameterObject();
 		List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
 		String sql = boundSql.getSql().replaceAll("[\\s]+", " ");
@@ -126,9 +132,11 @@ public class SqlInterceptor implements Interceptor {
 					if (metaObject.hasGetter(propertyName)) {
 						Object obj = metaObject.getValue(propertyName);
 						sql = sql.replaceFirst("\\?", getParameterValue(obj));
+						paramMap.put(propertyName, obj);
 					} else if (boundSql.hasAdditionalParameter(propertyName)) {
 						Object obj = boundSql.getAdditionalParameter(propertyName);
 						sql = sql.replaceFirst("\\?", getParameterValue(obj));
+						paramMap.put(propertyName, obj);
 					}
 				}
 			}

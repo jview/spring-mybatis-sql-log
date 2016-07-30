@@ -16,6 +16,18 @@
 
 	<!-- 配置要扫描的包 -->
 	<context:component-scan base-package="org.jview.fwork.schedule,org.jview.fwork.basedata" />
+	
+	<!-- 系统配置参数 -->
+	<bean id="sysconfigs" class="org.jview.fwork.basedata.util.Sysconfigs">
+		<property name="properties">
+			<props>  
+                <prop key="app.logSqlIgnore">select,select_count</prop> 
+                <prop key="sql.ignoreKey"></prop>
+                <prop key="sql.logInfo">0</prop>
+                <prop key="sql.logWarn">2000</prop>
+            </props>
+         </property>
+	</bean>
 
 	<!-- 读入配置属性文件 -->
 	<context:property-placeholder location="classpath:jdbc.properties,classpath:service.properties" />

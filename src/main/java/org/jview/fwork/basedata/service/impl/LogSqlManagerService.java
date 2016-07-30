@@ -97,12 +97,13 @@ public class LogSqlManagerService implements ILogSqlManager {
 		LogDbPO logDb=this.prepareLogDb(startDate, runTime, paramMap);
 		logDb.setLogLevel(logLevel);
 		logDb.setFlag("0");
+		logDb.setJsonParam((String)paramMap.get("args"));
 		ModelPO model=null;
 		if(sql!=null){
 			model=this.prepareModel(sqlId);
 			String operType=this.getOperTypeBySql(sql);
 			logDb.setOperType(operType);
-			logDb.setJsonParam(sql);
+			logDb.setJsonRet(sql);
 			logDb.setServiceId(-1l);
 			String logSqlIgnore=(String)Sysconfigs.getEnvMap().get("app.logSqlIgnore");
 			if(exp==null && isIgnore(logDb.getOperType(), sql, logSqlIgnore)){
@@ -112,7 +113,6 @@ public class LogSqlManagerService implements ILogSqlManager {
 		else{
 			model=this.prepareModel(paramMap);
 			logDb.setServiceId(0l);
-			logDb.setJsonParam((String)paramMap.get("args"));
 			logDb.setJsonRet((String)paramMap.get("returnValue"));
 			LogService logService=(LogService)paramMap.get("logService");
 			if(logService!=null){
