@@ -68,15 +68,15 @@ public class SqlInterceptor implements Interceptor {
 //			}
 			Set<String> ignoreSqlIds=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreSqlId");
 			
+			if(!ignoreSqlIds.isEmpty()){
 				String method=sqlId.substring(sqlId.lastIndexOf(".")+1);
 				String className=sqlId.substring(0, sqlId.lastIndexOf("."));
 				className=className.substring(className.lastIndexOf(".")+1);
 				String classMethod=className+"."+method;
-				System.out.println("----classMethod="+classMethod+" "+ignoreSqlIds);
 				if(ignoreSqlIds!=null && ignoreSqlIds.contains(classMethod)){
 					return returnValue;
 				}
-			
+			}
 			
 			if(sql.indexOf("INSERT INTO tf_log_db")>=0){
 				return returnValue;
