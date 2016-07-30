@@ -19,7 +19,7 @@
 **查看效果：** select * from v_log_db where class_name like 'LogMsg%' order by cid desc   
 **sql的日志的sql语句，**可以拿出来在数据库直接执行。   
 
-一般情况下，可以忽略select_count, select_seq的查询，以减少日志量，可以修改Sysconfigs.getEnvMap()的控制参数  
+一般情况下，可以忽略select_count, select_seq的查询，以减少日志量，可以修改系统配置参数sysconfigs(spring-context.xml)的控制参数  
 
 
 使用说明：
