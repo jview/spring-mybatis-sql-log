@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -24,6 +25,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 import org.apache.log4j.Logger;
 import org.jview.fwork.basedata.service.ILogSqlManager;
+import org.jview.fwork.basedata.util.Sysconfigs;
 
 import com.google.gson.Gson;
 
@@ -61,10 +63,21 @@ public class SqlInterceptor implements Interceptor {
 			paramMap.put("threadId",String.valueOf(Thread.currentThread().getId()));
 			paramMap.put("args", gson.toJson(pMap));
 			returnValue = invocation.proceed();
-//			System.out.println("----sql4="+sql);
 //			if(returnValue!=null){
 //				return returnValue;
 //			}
+			Set<String> ignoreSqlIds=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreSqlId");
+			
+				String method=sqlId.substring(sqlId.lastIndexOf(".")+1);
+				String className=sqlId.substring(0, sqlId.lastIndexOf("."));
+				className=className.substring(className.lastIndexOf(".")+1);
+				String classMethod=className+"."+method;
+				System.out.println("----classMethod="+classMethod+" "+ignoreSqlIds);
+				if(ignoreSqlIds!=null && ignoreSqlIds.contains(classMethod)){
+					return returnValue;
+				}
+			
+			
 			if(sql.indexOf("INSERT INTO tf_log_db")>=0){
 				return returnValue;
 			}

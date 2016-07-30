@@ -291,7 +291,16 @@ public class LogSqlManagerService implements ILogSqlManager {
 			logInfo=0;
 		}
 		Map<String, Object> envMap=Sysconfigs.getEnvMap();
-		Integer logInfo2=(Integer)envMap.get(key);
+		Object v=envMap.get(key);
+		Integer logInfo2=null;
+		if(v!=null){
+			if(v instanceof Integer){
+				logInfo2=(Integer)v;
+			}
+			else{
+				logInfo2=Integer.parseInt(""+v);
+			}
+		}
 		if(logInfo2!=null){
 			logInfo=logInfo2;
 		}
