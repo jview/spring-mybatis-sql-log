@@ -67,7 +67,7 @@ public class SqlInterceptor implements Interceptor {
 //				return returnValue;
 //			}
 			Set<String> ignoreSqlIds=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreSqlId");
-			
+//			System.out.println("------ignoreSqlIds="+ignoreSqlIds);
 			if(!ignoreSqlIds.isEmpty()){
 				String method=sqlId.substring(sqlId.lastIndexOf(".")+1);
 				String className=sqlId.substring(0, sqlId.lastIndexOf("."));
@@ -78,9 +78,6 @@ public class SqlInterceptor implements Interceptor {
 				}
 			}
 			
-			if(sql.indexOf("INSERT INTO tf_log_db")>=0){
-				return returnValue;
-			}
 			long runTime = (System.currentTimeMillis() - time);
 			
 			this.logSqlManager.addLogSqlAsync(startTime, sqlId, sql, runTime, null, paramMap);

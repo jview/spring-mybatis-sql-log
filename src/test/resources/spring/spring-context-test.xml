@@ -20,12 +20,19 @@
 	<!-- 系统配置参数 -->
 	<bean id="sysconfigs" class="org.jview.fwork.basedata.util.Sysconfigs">
 		<property name="properties">
-			<props>  
-                <prop key="app.logSqlIgnore">select,select_count</prop> 
-                <prop key="sql.ignoreKey"></prop>
-                <prop key="sql.ignoreSqlId">
-                	ModelMapper.selectByExample
+			<props>
+				<!-- sql日志，不记录以下查询类型，以减少日志量，多个可以“,”隔开 -->  
+                <prop key="sql.logSqlIgnore">select_seq,select_count</prop>
+                <!-- sql日志 ，不记录以下sql中含有此关键字的查询，多个可换行处理 --> 
+                <prop key="sql.ignoreKey">
+                	FROM tf_sysconfig WHERE ( IF_dEL = 0 and STATUS = 1 )
                 </prop>
+                <!-- sql日志，不记录以下mapperId的sql，以减少日志量，多个类可按行处理，单个类多个方法，可在后面以","隔开 -->
+                <prop key="sql.ignoreSqlId">
+                	ModelMapper:selectByExample
+                	LogDbMapper:insert,log
+                </prop>
+                <!-- info,warn级别的sql日志，sql接口执行时间>=以下配置的值才日志（单位ms) -->
                 <prop key="sql.logInfo">0</prop>
                 <prop key="sql.logWarn">2000</prop>
             </props>

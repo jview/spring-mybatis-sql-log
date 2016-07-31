@@ -20,8 +20,7 @@ public class Sysconfigs {
 	private static Map envMap=new HashMap();
 	
 
-	public static synchronized Map<String, Object> getEnvMap(){
-		
+	public static Map<String, Object> getEnvMap(){
 		return envMap;
 	}
 
@@ -30,22 +29,30 @@ public class Sysconfigs {
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 		Set<Map.Entry<Object,Object>> sets=this.properties.entrySet();
+		String key=null;
 		for(Map.Entry<Object,Object> entry:sets){
+			key=(String)entry.getKey();
 			if("sql.ignoreSqlId".equals(entry.getKey())){
 				String v=(String)entry.getValue();
-				envMap.put(entry.getKey(), this.getString2Set(v));
+				envMap.put(entry.getKey(), this.getString2Set(key, v));
 			}
 			else if("sql.ignoreKey".equals(entry.getKey())){
 				String v=(String)entry.getValue();
-				envMap.put(entry.getKey(), this.getString2Set(v));
+				envMap.put(entry.getKey(), this.getString2Set(key, v));
 			}
 			else{
 				envMap.put((String)entry.getKey(), entry.getValue());
 			}
 		}
+		logger.info("sysconfigs.envMap="+envMap);
 	}
 	
-	private Set<String> getString2Set(String lines){
+	/**
+	 * ModelMapper:create,insert 转成 ModelMapper.create,ModelMapper.insert
+	 * @param lines
+	 * @return
+	 */
+	private Set<String> getString2Set(String key, String lines){
 		Set<String> sets=new HashSet<String>();
 		if(!StringUtils.isEmpty(lines)){
 			lines=lines.trim();
@@ -53,12 +60,38 @@ public class Sysconfigs {
 			for(String sqlId:sqlIds){
 				sqlId=sqlId.trim();
 				if(!"".equals(sqlId)){
-					sets.add(sqlId);
+					addAllSqlIds(key, sqlId, sets);
 				}
 			}
 		}
 		
 		return sets;
+	}
+
+
+	/**
+	 * 根据配置的信息生成对应的每个方法的sqlId配置
+	 * ModelMapper:create,insert 转成 ModelMapper.create,ModelMapper.insert
+	 * @param sets
+	 * @param sqlId
+	 * @return
+	 */
+	private void addAllSqlIds(String key, String sqlId, Set<String> sets) {
+		String className="";
+		if("sql.ignoreSqlId".equals(key) && sqlId.indexOf(":")>0){
+			className=sqlId.substring(0, sqlId.indexOf(":"));
+			sqlId=sqlId.substring(sqlId.indexOf(":")+1);
+		}
+		String[] methods=sqlId.split(",");
+		for(String method:methods){
+			method=method.trim();
+			if(className.isEmpty()){
+				sets.add(method);
+			}
+			else{
+				sets.add(className+"."+method);
+			}
+		}
 	}
 	
 	

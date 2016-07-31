@@ -47,31 +47,7 @@ public class LogSqlManagerService implements ILogSqlManager {
 	
 	private Properties properties;
 	private static Map<String, Long> modelIdMap=new HashMap<>();
-	private static Map<String, Object> dataMap=null;
-	private static void loadProperties(Properties properties){
-		dataMap=new HashMap<String, Object>();
-		Integer logInfo=0;
-		Integer logWarn=2000;
-		Set<String> ignoreSqlKey=new HashSet<String>();
-		if(properties!=null){
-			logInfo=Integer.parseInt(properties.getProperty("sql.logInfo", "500"));
-			logWarn=Integer.parseInt(properties.getProperty("sql.logWarn", "2000"));
-			String ignoreSql=properties.getProperty("sql.ignoreKey", "");
-			if(ignoreSql!=null){
-				String[] keys=ignoreSql.split(",");
-				for(String key:keys){
-					key=key.trim();
-					ignoreSqlKey.add(key);
-				}
-			}
-		}
-		ignoreSqlKey.add("FROM tf_sysconfig WHERE ( IF_dEL = 0 and STATUS = 1 )");
-//		ignoreSqlKey.add("INSERT INTO tf_log_db");
-		logger.info("-----logLevel:logInfo="+logInfo+"ms, logWarn="+logWarn+"ms");
-		dataMap.put("sql.logInfo", logInfo);
-		dataMap.put("sql.logWarn", logWarn);
-		dataMap.put("sql.ignoreKey", ignoreSqlKey);
-	}
+	
 
 	
 	private boolean isIgnore(final String operType, final String sql, final String logSqlIgnore){
@@ -105,7 +81,7 @@ public class LogSqlManagerService implements ILogSqlManager {
 			logDb.setOperType(operType);
 			logDb.setJsonRet(sql);
 			logDb.setServiceId(-1l);
-			String logSqlIgnore=(String)Sysconfigs.getEnvMap().get("app.logSqlIgnore");
+			String logSqlIgnore=(String)Sysconfigs.getEnvMap().get("sql.logSqlIgnore");
 			if(exp==null && isIgnore(logDb.getOperType(), sql, logSqlIgnore)){
 				return;
 			}
@@ -286,23 +262,15 @@ public class LogSqlManagerService implements ILogSqlManager {
 	}
 	
 	private Integer getConfigValue(String key){
-		Integer logInfo=(Integer)dataMap.get(key);
-		if(logInfo==null){
-			logInfo=0;
-		}
 		Map<String, Object> envMap=Sysconfigs.getEnvMap();
 		Object v=envMap.get(key);
-		Integer logInfo2=null;
-		if(v!=null){
-			if(v instanceof Integer){
-				logInfo2=(Integer)v;
-			}
-			else{
-				logInfo2=Integer.parseInt(""+v);
-			}
+		
+		Integer logInfo=0;
+		if(v instanceof Integer){
+			logInfo=(Integer)v;
 		}
-		if(logInfo2!=null){
-			logInfo=logInfo2;
+		else{
+			logInfo=Integer.parseInt(""+v);
 		}
 		return logInfo;
 		
@@ -310,11 +278,9 @@ public class LogSqlManagerService implements ILogSqlManager {
 	
 	@Override
 	public void addLogSqlAsync(Date startTime, String sqlId, String sql, long runTime, Exception exp, HashMap<String, Object> paramMap){
-		if(dataMap==null){
-			loadProperties(this.properties);
-		}
 		
-		Set<String> ignoreKey=(Set<String>)dataMap.get("sql.ignoreKey");
+		
+		Set<String> ignoreKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");
 		if(isContainIgnoreSqlKey(sql, ignoreKey)){
 			logger.debug(sqlId+":"+sql+":"+runTime+"ms");
 			return;
@@ -369,16 +335,8 @@ public class LogSqlManagerService implements ILogSqlManager {
 	@Override
 	public void addLogAsync(Date startTime, long runTime, Exception exp,
 			HashMap<String, Object> paramMap) {
-		if(dataMap==null){
-			loadProperties(this.properties);
-		}
-		
-		Set<String> ignoreKey=(Set<String>)dataMap.get("service.ignoreKey");
-		Map<String, Object> envMap=Sysconfigs.getEnvMap();
-		Set<String> ignoreKey2=(Set<String>)envMap.get("sql.ignoreKey");
-		if(ignoreKey!=null){
-			ignoreKey=ignoreKey2;
-		}
+
+		Set<String> ignoreKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");
 		
 //		if(!isContainIgnoreSqlKey(sql, ignoreKey)){
 //			logger.debug(sqlId+":"+sql+":"+runTime+"ms");
