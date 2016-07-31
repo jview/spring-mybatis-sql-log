@@ -6,9 +6,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * 
- * @描述: 启动Dubbo服务用的MainClass.
- * @作者: WuShuicheng .
- * @创建时间: 2013-11-5,下午9:47:55 .
+ * @描述: 启动服务用的MainClass.
  * @版本: 1.0 .
  */
 public class ScheduleProvider {
@@ -20,7 +18,7 @@ public class ScheduleProvider {
 			ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring/spring-context.xml");
 			context.start();
 		} catch (Exception e) {
-			log.error("== DubboProvider context start error:",e);
+			log.error("== ScheduleProvider context start error:",e);
 		}
 		synchronized (ScheduleProvider.class) {
 			while (true) {
