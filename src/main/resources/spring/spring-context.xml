@@ -44,8 +44,6 @@
 	<import resource="spring-mail.xml" />
 	<import resource="spring-schedule.xml" />
 	<import resource="spring-mybatis.xml" />
-	<import resource="dubbo-provider.xml" />
-	<import resource="dubbo-consumer.xml" />
 	
 	
 </beans>

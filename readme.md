@@ -3,7 +3,7 @@
 主要是分两个任务来处理，一个用来载入数据到待处理MAP，另一个用来监测待处理MAP，有就处理，没有就空着。  
 并提供 一个待处理MAP更新接口，使在消息保存后可以调一下这个接口IScheduleToDoService.addToDo，以便于马上处理这个消息。      
 **重置待发邮件数据：** update msgs.tf_log_msg set send_time=now(),send_flag=0   
-**运行的代码是：** DubboScheduleProvider.java   
+**运行的代码是：** ScheduleProvider.java   
 **注：**代码是从dubbo服务中提取出来，会有点dubbo相关的文件，必要的依赖已去掉。    
 **数据脚本** /src/test/sql/msgs.sql
 

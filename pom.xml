@@ -139,18 +139,7 @@
 			<scope>system</scope> 
 			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/mapper-3.3.14.jar</systemPath> 
         </dependency>
-        <dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>dubbo</artifactId>
-			<version>2.5.3</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.springframework</groupId>
-					<artifactId>spring</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
+        
 
 		<dependency>
 		    <groupId>org.quartz-scheduler</groupId>
@@ -486,12 +475,7 @@
 		</dependency>
 	
 		
-		<!-- dubbo 需要的jar start -->
-		<dependency>
-			<groupId>org.jboss.netty</groupId>
-			<artifactId>netty</artifactId>
-			<version>3.2.5.Final</version>
-		</dependency>
+		
 
 		<!-- Zookeeper 用于分布式服务管理 -->
 			<dependency>

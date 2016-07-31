@@ -11,9 +11,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @创建时间: 2013-11-5,下午9:47:55 .
  * @版本: 1.0 .
  */
-public class DubboScheduleProvider {
+public class ScheduleProvider {
 	
-	private static final Log log = LogFactory.getLog(DubboScheduleProvider.class);
+	private static final Log log = LogFactory.getLog(ScheduleProvider.class);
 
 	public static void main(String[] args) {
 		try {
@@ -22,10 +22,10 @@ public class DubboScheduleProvider {
 		} catch (Exception e) {
 			log.error("== DubboProvider context start error:",e);
 		}
-		synchronized (DubboScheduleProvider.class) {
+		synchronized (ScheduleProvider.class) {
 			while (true) {
 				try {
-					DubboScheduleProvider.class.wait();
+					ScheduleProvider.class.wait();
 				} catch (InterruptedException e) {
 					log.error("== synchronized error:",e);
 				}
