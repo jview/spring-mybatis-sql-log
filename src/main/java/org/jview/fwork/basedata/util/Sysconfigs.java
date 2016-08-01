@@ -56,7 +56,13 @@ public class Sysconfigs {
 		Set<String> sets=new HashSet<String>();
 		if(!StringUtils.isEmpty(lines)){
 			lines=lines.trim();
-			String[] sqlIds=lines.split("\n");
+			String[] sqlIds=null;
+			if(lines.indexOf(";")>0){
+				sqlIds=lines.split(";");
+			}
+			else{
+				sqlIds=lines.split("\n");
+			}
 			for(String sqlId:sqlIds){
 				sqlId=sqlId.trim();
 				if(!"".equals(sqlId)){
