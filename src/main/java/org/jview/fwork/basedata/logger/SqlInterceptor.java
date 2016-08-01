@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
@@ -73,6 +74,16 @@ public class SqlInterceptor implements Interceptor {
 			//取得数据行数
 			Integer rows=this.getReturnRows(returnValue);
 			paramMap.put("rows", rows);
+			
+			//忽略指定的查询类型
+			String operType=this.getOperTypeBySql(sql);
+			String logSqlIgnore=(String)Sysconfigs.getEnvMap().get("sql.logSqlIgnore");
+			if(isIgnore(operType, sql, logSqlIgnore)){
+				logger.debug("-----logSqlIgnore sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+				return returnValue;
+			}
+			
+			//忽略mybatis的mapperId的对应的查询日志
 			Set<String> ignoreSqlIds=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreSqlId");
 //			System.out.println("------ignoreSqlIds="+ignoreSqlIds);
 			if(!ignoreSqlIds.isEmpty()){
@@ -81,8 +92,16 @@ public class SqlInterceptor implements Interceptor {
 				className=className.substring(className.lastIndexOf(".")+1);
 				String classMethod=className+"."+method;
 				if(ignoreSqlIds!=null && ignoreSqlIds.contains(classMethod)){
+					logger.debug("-----ignoreSqlId sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
 					return returnValue;
 				}
+			}
+			
+			//忽略sql含有指定关键字的查询日志
+			Set<String> ignoreSqlKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");
+			if(this.isContainIgnoreSqlKey(sql, ignoreSqlKey)){
+				logger.debug("-----ignoreSqlKey sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+				return returnValue;
 			}
 			
 //			long runTime2 = (System.currentTimeMillis() - time);
@@ -96,6 +115,20 @@ public class SqlInterceptor implements Interceptor {
 		}
 		return returnValue;
 
+	}
+	
+	private boolean isContainIgnoreSqlKey(final String sql, final Set<String> ignoreSqlKeySet){
+		if(ignoreSqlKeySet==null){
+			return false;
+		}
+//		System.out.println(ignoreSqlKeySet);
+		for(String ignoreSqlKey:ignoreSqlKeySet){
+			if(ignoreSqlKey.length()>0 && sql.indexOf(ignoreSqlKey)>=0){
+				logger.debug("----ignore:"+ignoreSqlKey+" --sql:"+sql);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**
@@ -140,6 +173,53 @@ public class SqlInterceptor implements Interceptor {
 
 	}
 	
+	/**
+	 * 获取数据库操作类型
+	 * @param sql
+	 * @return
+	 */
+	private String getOperTypeBySql(String sql){
+		String operType=null;
+		String oper=sql;
+		if(sql.length()>6){
+			oper=sql.substring(0, 6);
+		}
+		operType=oper.toLowerCase();
+		if(operType.equals("select")){
+			if(sql.indexOf("count(0)")>0){
+				operType+="_count";
+			}
+			else if(sql.indexOf(" _nextval(")>0){
+				operType+="_seq";
+			}
+		}
+		return operType;
+	}
+	
+	/**
+	 * 是否忽略
+	 * @param operType
+	 * @param sql
+	 * @param logSqlIgnore
+	 * @return
+	 */
+	private boolean isIgnore(final String operType, final String sql, final String logSqlIgnore){
+		if(logSqlIgnore==null){
+			return false;
+		}
+		String[] ignores=logSqlIgnore.split(",");
+		for(String ignore:ignores){
+			ignore=ignore.trim();
+			if(StringUtils.isEmpty(ignore)){
+				continue;
+			}
+			if(operType.equals(ignore)||sql.indexOf(ignore)>=0){
+				logger.debug("----ignore:"+ignore+" --sql:"+sql);
+				return true;
+			}
+		}
+		return false;
+	}
 	private static  Gson gson = new Gson();
 	
 	private static String getParameterValue(Object obj) {

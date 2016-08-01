@@ -2,7 +2,6 @@ package org.jview.fwork.basedata.service.impl;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -88,6 +87,7 @@ public class LogSqlManagerService implements ILogSqlManager {
 			logDb.setServiceId(-1l);
 			String logSqlIgnore=(String)Sysconfigs.getEnvMap().get("sql.logSqlIgnore");
 			if(exp==null && isIgnore(logDb.getOperType(), sql, logSqlIgnore)){
+				logger.debug("-----logSqlIgnore sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
 				return;
 			}
 		}
@@ -288,17 +288,10 @@ public class LogSqlManagerService implements ILogSqlManager {
 		
 		Set<String> ignoreKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");
 		if(isContainIgnoreSqlKey(sql, ignoreKey)){
-			logger.debug(sqlId+":"+sql+":"+runTime+"ms");
+			logger.debug("-----ignoreKey sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
 			return;
 		}
-		
-		Map<String, Object> envMap=Sysconfigs.getEnvMap();
-		ignoreKey=(Set<String>)envMap.get("sql.ignoreKey");
-		if(isContainIgnoreSqlKey(sql, ignoreKey)){
-			logger.debug(sqlId+":"+sql+":"+runTime+"ms");
-			return;
-		}
-		
+
 		Integer logInfo=this.getConfigValue("sql.logInfo");
 		Integer logWarn=this.getConfigValue("sql.logWarn");
 		if(logInfo==null){
