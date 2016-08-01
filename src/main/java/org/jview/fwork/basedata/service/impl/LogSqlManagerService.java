@@ -69,11 +69,16 @@ public class LogSqlManagerService implements ILogSqlManager {
 	}
 
 	
-	private void insertOperatorLog(Integer logLevel, Date startDate, String sqlId, String sql, long runTime, Exception exp, HashMap<String, Object> paramMap){
+	private void insertOperatorLog(final Integer logLevel, final Date startDate, final String sqlId, final String sql
+			, final long runTime, final Exception exp, final HashMap<String, Object> paramMap){
 		LogDbPO logDb=this.prepareLogDb(startDate, runTime, paramMap);
 		logDb.setLogLevel(logLevel);
 		logDb.setFlag("0");
 		logDb.setJsonParam((String)paramMap.get("args"));
+		Object rows=paramMap.get("rows");
+		if(rows!=null){
+			logDb.setRows((Integer)rows);
+		}
 		ModelPO model=null;
 		if(sql!=null){
 			model=this.prepareModel(sqlId);
@@ -127,7 +132,7 @@ public class LogSqlManagerService implements ILogSqlManager {
 	 * @param logDb
 	 * @param model
 	 */
-	private Long initModelId(ModelPO model) {
+	private Long initModelId(final ModelPO model) {
 		String key=model.getPackageName()+"."+model.getClassName()+"."+model.getFuncCode();
 		Long modelId=modelIdMap.get(key);
 		if(modelId==null){
@@ -148,7 +153,7 @@ public class LogSqlManagerService implements ILogSqlManager {
 	
 
 	
-	private ModelPO prepareModel(Map<String, Object> paramMap){
+	private ModelPO prepareModel(final Map<String, Object> paramMap){
 		String target=(String)paramMap.get("target");
 		int find=target.indexOf("@");
 		String className=target;
@@ -169,7 +174,7 @@ public class LogSqlManagerService implements ILogSqlManager {
 		return model;
 	}
 	
-	private ModelPO prepareModel(String sqlId){
+	private ModelPO prepareModel(final String sqlId){
 		ModelPO model=new ModelPO();
 		String funcCode=sqlId.substring(sqlId.lastIndexOf(".")+1);
 		String className=sqlId.substring(0, sqlId.lastIndexOf("."));
@@ -185,7 +190,7 @@ public class LogSqlManagerService implements ILogSqlManager {
 		return model;
 	}
 	
-	private LogDbPO prepareLogDb(Date startDate, long runTime, HashMap<String, Object> paramMap){
+	private LogDbPO prepareLogDb(final Date startDate, final long runTime, final HashMap<String, Object> paramMap){
 		LogDbPO logDb = new LogDbPO();
 //		if(request!=null){
 //			logDb.setIp(AppContext.getIpAddr(request));
@@ -277,7 +282,8 @@ public class LogSqlManagerService implements ILogSqlManager {
 	}
 	
 	@Override
-	public void addLogSqlAsync(Date startTime, String sqlId, String sql, long runTime, Exception exp, HashMap<String, Object> paramMap){
+	public void addLogSqlAsync(final Date startTime, final String sqlId, final String sql
+			, final long runTime, final Exception exp, final HashMap<String, Object> paramMap){
 		
 		
 		Set<String> ignoreKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");

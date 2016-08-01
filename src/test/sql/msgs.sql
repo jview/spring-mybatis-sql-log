@@ -2,15 +2,15 @@
 Navicat MySQL Data Transfer
 
 Source Server         : local-edu_demo
-Source Server Version : 50519
+Source Server Version : 50525
 Source Host           : localhost:3306
 Source Database       : msgs
 
 Target Server Type    : MYSQL
-Target Server Version : 50519
+Target Server Version : 50525
 File Encoding         : 65001
 
-Date: 2016-07-19 22:09:18
+Date: 2016-08-01 09:51:02
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -42,28 +42,14 @@ CREATE TABLE `tf_log_db` (
   `oper_type` varchar(100) DEFAULT NULL,
   `thread_id` decimal(15,0) DEFAULT NULL,
   `calls` varchar(200) DEFAULT NULL,
+  `rows` int(11) DEFAULT '0' COMMENT '数据行数',
+  `rows1` int(11) DEFAULT '0',
   PRIMARY KEY (`cid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户操作记录表';
 
 -- ----------------------------
 -- Records of tf_log_db
 -- ----------------------------
-INSERT INTO `tf_log_db` VALUES ('361', null, '-1', null, '', '4', '2016-07-19 21:52:08', '2', null, 'SELECT class_name,package_name,CREATE_dATE,CID,func_code FROM tf_model WHERE ( class_name = \'LogMsgMapper\' and func_code = \'selectByExample\' )', null, null, null, '0', null, '16', null, '3.15', null, 'select', '18', null);
-INSERT INTO `tf_log_db` VALUES ('362', null, '-1', null, '', '4', '2016-07-19 21:52:07', '2', null, 'SELECT class_name,package_name,CREATE_dATE,CID,func_code FROM tf_model WHERE ( class_name = \'LogMsgMapper\' and func_code = \'selectByExample_COUNT\' )', null, null, null, '0', null, '32', null, '3.15', null, 'select', '17', null);
-INSERT INTO `tf_log_db` VALUES ('363', null, '0', null, '', '6', '2016-07-19 21:52:07', '2', 'logMsg', null, null, null, null, '0', '', '407', null, '3.15', 'cjh', null, '1', 'selectByExample');
-INSERT INTO `tf_log_db` VALUES ('364', null, '-1', null, '', '5', '2016-07-19 21:52:07', '2', null, 'SELECT BCCS,send_count,send_type,TOS,TITLE,CREATE_dATE,attach_path,send_time,mail_count,CCS,CREATE_uSER,run_time,msg_type,end_time,CID,user_id,send_flag,fail_mails,CONTENT,TEMPLATE,msg_code,EXCEPTIONS,project_id FROM tf_log_msg order by create_date desc limit 0,10', null, null, null, '0', null, '32', null, '3.15', null, 'select', '1', null);
-INSERT INTO `tf_log_db` VALUES ('365', null, '-1', null, '', '4', '2016-07-19 21:52:08', '2', null, 'SELECT class_name,package_name,CREATE_dATE,CID,func_code FROM tf_model WHERE ( class_name = \'ModelMapper\' and func_code = \'selectByExample\' )', null, null, null, '0', null, '15', null, '3.15', null, 'select', '21', null);
-INSERT INTO `tf_log_db` VALUES ('366', null, '-1', null, '', '3', '2016-07-19 21:52:07', '2', null, 'SELECT count(0) FROM tf_log_msg', null, null, null, '0', null, '297', null, '3.15', null, 'select_count', '1', null);
-INSERT INTO `tf_log_db` VALUES ('367', null, '-1', null, '', '4', '2016-07-19 21:52:08', '2', null, 'SELECT class_name,package_name,CREATE_dATE,CID,func_code FROM tf_model WHERE ( class_name = \'ModelMapper\' and func_code = \'selectByExample\' )', null, null, null, '0', null, '32', null, '3.15', null, 'select', '22', null);
-INSERT INTO `tf_log_db` VALUES ('368', null, '-1', null, '', '4', '2016-07-19 21:52:08', '2', null, 'SELECT class_name,package_name,CREATE_dATE,CID,func_code FROM tf_model WHERE ( class_name = \'LogMsgService\' and func_code = \'findPageByLogMsg\' )', null, null, null, '0', null, '31', null, '3.15', null, 'select', '19', null);
-INSERT INTO `tf_log_db` VALUES ('369', null, '-1', null, '', '5', '2016-07-19 21:58:34', '2', null, 'SELECT BCCS,send_count,send_type,TOS,TITLE,CREATE_dATE,attach_path,send_time,mail_count,CCS,CREATE_uSER,run_time,msg_type,end_time,CID,user_id,send_flag,fail_mails,CONTENT,TEMPLATE,msg_code,EXCEPTIONS,project_id FROM tf_log_msg order by create_date desc limit 0,10', null, null, null, '0', null, '16', null, '3.15', null, 'select', '1', null);
-INSERT INTO `tf_log_db` VALUES ('370', null, '0', null, '', '6', '2016-07-19 21:58:34', '2', 'logMsg', null, null, null, null, '0', '', '266', null, '3.15', 'cjh', null, '1', 'selectByExample');
-INSERT INTO `tf_log_db` VALUES ('371', null, '-1', null, '', '3', '2016-07-19 21:58:34', '2', null, 'SELECT count(0) FROM tf_log_msg', null, null, null, '0', null, '125', null, '3.15', null, 'select_count', '1', null);
-INSERT INTO `tf_log_db` VALUES ('372', null, '-1', null, '', '4', '2016-07-19 21:58:34', '2', null, 'SELECT class_name,package_name,CREATE_dATE,CID,func_code FROM tf_model WHERE ( class_name = \'LogMsgMapper\' and func_code = \'selectByExample_COUNT\' )', null, null, null, '0', null, '16', null, '3.15', null, 'select', '17', null);
-INSERT INTO `tf_log_db` VALUES ('373', null, '-1', null, '', '4', '2016-07-19 21:58:34', '2', null, 'SELECT class_name,package_name,CREATE_dATE,CID,func_code FROM tf_model WHERE ( class_name = \'ModelMapper\' and func_code = \'selectByExample\' )', null, null, null, '0', null, '15', null, '3.15', null, 'select', '21', null);
-INSERT INTO `tf_log_db` VALUES ('374', null, '-1', null, '', '4', '2016-07-19 21:58:34', '2', null, 'SELECT class_name,package_name,CREATE_dATE,CID,func_code FROM tf_model WHERE ( class_name = \'LogMsgMapper\' and func_code = \'selectByExample\' )', null, null, null, '0', null, '0', null, '3.15', null, 'select', '18', null);
-INSERT INTO `tf_log_db` VALUES ('375', null, '-1', null, '', '4', '2016-07-19 21:58:34', '2', null, 'SELECT class_name,package_name,CREATE_dATE,CID,func_code FROM tf_model WHERE ( class_name = \'ModelMapper\' and func_code = \'selectByExample\' )', null, null, null, '0', null, '16', null, '3.15', null, 'select', '23', null);
-INSERT INTO `tf_log_db` VALUES ('376', null, '-1', null, '', '4', '2016-07-19 21:58:34', '2', null, 'SELECT class_name,package_name,CREATE_dATE,CID,func_code FROM tf_model WHERE ( class_name = \'LogMsgService\' and func_code = \'findPageByLogMsg\' )', null, null, null, '0', null, '0', null, '3.15', null, 'select', '19', null);
 
 -- ----------------------------
 -- Table structure for tf_log_msg
@@ -200,43 +186,14 @@ CREATE TABLE `tf_sequence` (
 -- ----------------------------
 INSERT INTO `tf_sequence` VALUES ('_tf_logMsgDetail_cid_seq', '81', '1');
 INSERT INTO `tf_sequence` VALUES ('_tf_logMsg_cid_seq', '21', '1');
-INSERT INTO `tf_sequence` VALUES ('_tf_logDb_cid_seq', '376', '1');
+INSERT INTO `tf_sequence` VALUES ('_tf_logDb_cid_seq', '405', '1');
 INSERT INTO `tf_sequence` VALUES ('_tf_model_cid_seq', '12', '1');
 
 -- ----------------------------
 -- View structure for v_log_db
 -- ----------------------------
 DROP VIEW IF EXISTS `v_log_db`;
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%`  VIEW `v_log_db` AS SELECT
-    log.cid,
-     m.class_name,
-    m.func_code,
-   
-   
-    log.user_id,
-    log.user_name,
-    log.model_id,
-    log.create_date,
-    log.log_level,
-    log.thread_id,
-    	log.title,
-    	log.author,
-    	log.calls,
-    	log.descs,
-    log.json_param,
-    log.json_param_opt_id,
-    log.json_ret,
-    log.json_ret_opt_id,
-    log.flag,
-    log.run_time,
-    log.remark,
-    log.ip,
-    log.oper_type,
-    m.package_name
-FROM
-    (tf_log_db log JOIN tf_model m)
-WHERE
-    (log.model_id = m.cid) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`%` SQL SECURITY DEFINER VIEW `v_log_db` AS select `log`.`cid` AS `cid`,`m`.`class_name` AS `class_name`,`m`.`func_code` AS `func_code`,`log`.`user_id` AS `user_id`,`log`.`user_name` AS `user_name`,`log`.`model_id` AS `model_id`,`log`.`create_date` AS `create_date`,`log`.`log_level` AS `log_level`,`log`.`thread_id` AS `thread_id`,`log`.`title` AS `title`,`log`.`author` AS `author`,`log`.`calls` AS `calls`,`log`.`descs` AS `descs`,`log`.`json_param` AS `json_param`,`log`.`json_param_opt_id` AS `json_param_opt_id`,`log`.`json_ret` AS `json_ret`,`log`.`json_ret_opt_id` AS `json_ret_opt_id`,`log`.`flag` AS `flag`,`log`.`run_time` AS `run_time`,`log`.`rows` AS `rows`,`log`.`remark` AS `remark`,`log`.`ip` AS `ip`,`log`.`oper_type` AS `oper_type`,`m`.`package_name` AS `package_name` from (`tf_log_db` `log` join `tf_model` `m`) where (`log`.`model_id` = `m`.`cid`) ;
 
 -- ----------------------------
 -- Function structure for currval

@@ -29,6 +29,9 @@ import org.jview.fwork.basedata.util.Sysconfigs;
 
 import com.google.gson.Gson;
 
+import ai.yc.common.core.data.RetResult;
+import ai.yc.common.core.page.PageVO;
+
 @Intercepts({
 		@Signature(type = Executor.class, method = "update", args = {
 				MappedStatement.class, Object.class }),
@@ -63,9 +66,13 @@ public class SqlInterceptor implements Interceptor {
 			paramMap.put("threadId",String.valueOf(Thread.currentThread().getId()));
 			paramMap.put("args", gson.toJson(pMap));
 			returnValue = invocation.proceed();
+			long runTime = (System.currentTimeMillis() - time);
 //			if(returnValue!=null){
 //				return returnValue;
 //			}
+			//取得数据行数
+			Integer rows=this.getReturnRows(returnValue);
+			paramMap.put("rows", rows);
 			Set<String> ignoreSqlIds=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreSqlId");
 //			System.out.println("------ignoreSqlIds="+ignoreSqlIds);
 			if(!ignoreSqlIds.isEmpty()){
@@ -78,8 +85,8 @@ public class SqlInterceptor implements Interceptor {
 				}
 			}
 			
-			long runTime = (System.currentTimeMillis() - time);
-			
+//			long runTime2 = (System.currentTimeMillis() - time);
+//			System.out.println("----runTime="+runTime+"/"+runTime2);
 			this.logSqlManager.addLogSqlAsync(startTime, sqlId, sql, runTime, null, paramMap);
 		}
 		catch (Exception e) {
@@ -89,6 +96,34 @@ public class SqlInterceptor implements Interceptor {
 		}
 		return returnValue;
 
+	}
+	
+	/**
+	 * 获取返回的数据行数
+	 * @param retValue
+	 * @return
+	 */
+	private Integer getReturnRows(final Object retValue){
+		if(retValue==null){
+			return 0;
+		}
+		if(retValue instanceof RetResult){
+			RetResult ret=(RetResult)retValue;
+			return ret.getSize();
+		}
+		else if(retValue instanceof PageVO){
+			PageVO page=(PageVO)retValue;
+			if(page.getDatas()!=null)
+				return page.getDatas().size();
+		}
+		else if(retValue instanceof List){
+			return ((List)retValue).size();
+		}
+//		应该不需要数组，因为一般情况下只会返回list
+//		else if(retValue.getClass().isArray()){
+//			return ((Object[])retValue).length;
+//		}
+		return 0;
 	}
 
 	public static String getSql(Configuration configuration, BoundSql boundSql, Map<String, Object> paramMap) {

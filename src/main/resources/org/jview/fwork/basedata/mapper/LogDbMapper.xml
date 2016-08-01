@@ -20,7 +20,13 @@
     <result column="json_ret_opt_id" property="jsonRetOptId" jdbcType="DECIMAL" />
     <result column="flag" property="flag" jdbcType="VARCHAR" />
     <result column="descs" property="descs" jdbcType="VARCHAR" />
+    <result column="calls" property="calls" jdbcType="VARCHAR" />
+    <result column="author" property="author" jdbcType="VARCHAR" />
+    <result column="oper_type" property="operType" jdbcType="VARCHAR" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
     <result column="run_time" property="runTime" jdbcType="INTEGER" />
+    <result column="thread_id" property="threadId" jdbcType="INTEGER" />
+    <result column="rows" property="rows" jdbcType="INTEGER" />
     <result column="remark" property="remark" jdbcType="VARCHAR" />
   </resultMap>
   <sql id="Base_Column_List" >
@@ -29,6 +35,7 @@
     -->
     cid, project_id, service_id, user_id, user_name, model_id, create_date, log_level, 
     title, json_param, json_param_opt_id, json_ret, json_ret_opt_id, flag, descs, run_time, 
+    rows,ip,author,calls,oper_type,thread_id,
     remark
   </sql>
 </mapper>

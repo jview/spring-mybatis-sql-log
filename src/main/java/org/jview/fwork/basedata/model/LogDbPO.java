@@ -95,6 +95,8 @@ model表中是否没有，如果没有就自动在model表中加数据
     @Column(name = "run_time")
     private Long runTime;
     
+    private Integer rows;
+    
     /**
      * 操作类型(insert,select,update等)
      */
@@ -455,6 +457,16 @@ model表中是否没有，如果没有就自动在model表中加数据
 
 	public void setThreadId(Long threadId) {
 		this.threadId = threadId;
+	}
+	
+	
+
+	public Integer getRows() {
+		return rows;
+	}
+
+	public void setRows(Integer rows) {
+		this.rows = rows;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -18,10 +19,10 @@ import org.jview.fwork.basedata.service.ILogSqlManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+
 import ai.yc.common.core.data.RetResult;
 import ai.yc.common.core.page.PageVO;
-
-import com.google.gson.Gson;
 
 /**
  * 用于记录接口对应的作者及标题
@@ -88,10 +89,15 @@ public class LogServiceAspect {
 			pointMap.put("threadId",String.valueOf(Thread.currentThread().getId()));
 			returnValue = pjp.proceed();
 			long runTime=System.currentTimeMillis() - time;
+			//取得数据行数
+			Integer rows=this.getReturnRows(returnValue);
+			pointMap.put("rows", rows);
 			if(returnValue!=null && !LogService.noRet.equals(logService.descs())){
 				Object nodatasRet = removeDatas(logService.descs(), returnValue);//descs为noDatas的处理
 				pointMap.put("returnValue", gson.toJson(nodatasRet));
 			}
+//			long runTime2=System.currentTimeMillis() - time;
+//			System.out.println("----service.runTime="+runTime+"/"+runTime2);
 			this.logSqlManager.addLogAsync(startTime, runTime, null, pointMap);
 		}
 		catch (Exception e) {
@@ -101,6 +107,35 @@ public class LogServiceAspect {
 		}
 		return returnValue;
 	}
+	
+	/**
+	 * 获取返回的数据行数
+	 * @param returnValue
+	 * @return
+	 */
+	private Integer getReturnRows(final Object returnValue){
+		if(returnValue==null){
+			return 0;
+		}
+		if(returnValue instanceof RetResult){
+			RetResult ret=(RetResult)returnValue;
+			return ret.getSize();
+		}
+		else if(returnValue instanceof PageVO){
+			PageVO page=(PageVO)returnValue;
+			if(page.getDatas()!=null)
+				return page.getDatas().size();
+		}
+		else if(returnValue instanceof List){
+			return ((List)returnValue).size();
+		}
+//		应该不需要数组，因为一般情况下只会返回list
+//		else if(returnValue.getClass().isArray()){
+//			return ((Object[])returnValue).length;
+//		}
+		return 0;
+		
+	}
 
 	/**
 	 * descs为noDatas的处理，如果返回对象是PageVO,或RetResult则去掉datas以减少日志量
@@ -108,7 +143,7 @@ public class LogServiceAspect {
 	 * @param returnValue
 	 * @return
 	 */
-	private Object removeDatas(String descs, Object returnValue) {
+	private Object removeDatas(final String descs, final Object returnValue) {
 		if(!LogService.noDatas.equals(descs)){
 			return returnValue;
 		}
@@ -117,7 +152,7 @@ public class LogServiceAspect {
 			RetResult ret2=new RetResult(ret);
 			ret2.setDataList(new ArrayList());
 			ret2.setMsgBody("size:"+ret.getSize());
-			returnValue=ret2;
+			return ret2;
 		}
 		else if(returnValue instanceof PageVO){
 			PageVO page=(PageVO)returnValue;
@@ -128,7 +163,7 @@ public class LogServiceAspect {
 			pageMap.put("totalPage", page.getTotalPage());
 			pageMap.put("pageBegin", page.getPageBegin());
 			pageMap.put("pageEnd", page.getPageEnd());
-			returnValue=pageMap;
+			return pageMap;
 		}
 		return returnValue;
 	}
