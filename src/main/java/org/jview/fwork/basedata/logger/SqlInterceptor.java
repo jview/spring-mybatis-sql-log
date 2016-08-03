@@ -86,7 +86,7 @@ public class SqlInterceptor implements Interceptor {
 			//忽略mybatis的mapperId的对应的查询日志
 			Set<String> ignoreSqlIds=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreSqlId");
 //			System.out.println("------ignoreSqlIds="+ignoreSqlIds);
-			if(!ignoreSqlIds.isEmpty()){
+			if(ignoreSqlIds!=null && !ignoreSqlIds.isEmpty()){
 				String method=sqlId.substring(sqlId.lastIndexOf(".")+1);
 				String className=sqlId.substring(0, sqlId.lastIndexOf("."));
 				className=className.substring(className.lastIndexOf(".")+1);
