@@ -65,6 +65,18 @@
             <array>
             	<bean id="sqlInterceptor" class="org.jview.fwork.basedata.logger.SqlInterceptor">
             		<property name="logSqlManager" ref="logSqlManager"></property>
+            		<property name="properties">
+						<props>  
+			                <prop key="sql.logSqlIgnore">select_seq,select_count</prop> 
+			                <prop key="sql.ignoreKey">
+			                	FROM tf_sysconfig WHERE ( IF_dEL = 0 and STATUS = 1 )
+			                </prop>
+			                <prop key="sql.ignoreSqlId">
+			                	ModelMapper:selectByExample
+			                	LogDbMapper:insert
+			                </prop>
+			            </props>
+			         </property>
             	</bean>
                 <bean class="com.github.pagehelper.PageHelper">
                     <!-- 这里的几个配置主要演示如何使用，如果不理解，一定要去掉下面的配置 -->

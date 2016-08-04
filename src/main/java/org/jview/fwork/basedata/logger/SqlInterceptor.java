@@ -3,6 +3,7 @@ package org.jview.fwork.basedata.logger;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,6 +44,7 @@ import ai.yc.common.core.page.PageVO;
 public class SqlInterceptor implements Interceptor {
 	private static final Logger logger = Logger.getLogger(SqlInterceptor.class);
 	private ILogSqlManager logSqlManager;
+	private static Map configMap=new HashMap();
 
 	
 	public Object intercept(Invocation invocation) throws Throwable {
@@ -76,31 +78,47 @@ public class SqlInterceptor implements Interceptor {
 			paramMap.put("rows", rows);
 			
 			//忽略指定的查询类型
+			String ignoreSqlType=(String)configMap.get("sql.logSqlIgnore");
 			String operType=this.getOperTypeBySql(sql);
-			String logSqlIgnore=(String)Sysconfigs.getEnvMap().get("sql.logSqlIgnore");
-			if(isIgnore(operType, sql, logSqlIgnore)){
-				logger.debug("-----logSqlIgnore sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+			if(isIgnore(operType, sql, ignoreSqlType)){
+				logger.debug("-----ignoreSqlType sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
 				return returnValue;
 			}
 			
 			//忽略mybatis的mapperId的对应的查询日志
-			Set<String> ignoreSqlIds=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreSqlId");
-//			System.out.println("------ignoreSqlIds="+ignoreSqlIds);
-			if(ignoreSqlIds!=null && !ignoreSqlIds.isEmpty()){
-				String method=sqlId.substring(sqlId.lastIndexOf(".")+1);
-				String className=sqlId.substring(0, sqlId.lastIndexOf("."));
-				className=className.substring(className.lastIndexOf(".")+1);
-				String classMethod=className+"."+method;
-				if(ignoreSqlIds!=null && ignoreSqlIds.contains(classMethod)){
-					logger.debug("-----ignoreSqlId sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
-					return returnValue;
-				}
+			Set<String> ignoreSqlIds=(Set<String>)configMap.get("sql.ignoreSqlId");
+			if(this.isIgnoreSqlId(sqlId, ignoreSqlIds)){
+				logger.debug("-----ignoreSqlId sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+				return returnValue;
 			}
 			
 			//忽略sql含有指定关键字的查询日志
-			Set<String> ignoreSqlKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");
+			Set<String> ignoreSqlKey=(Set<String>)configMap.get("sql.ignoreKey");
 			if(this.isContainIgnoreSqlKey(sql, ignoreSqlKey)){
-				logger.debug("-----ignoreSqlKey sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+				logger.debug("-----ignoreKey sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+				return returnValue;
+			}
+			
+			
+			//忽略指定的查询类型
+			String logSqlIgnore=(String)Sysconfigs.getEnvMap().get("sql.logSqlIgnore");
+			if(isIgnore(operType, sql, logSqlIgnore)){
+				logger.debug("-----logSqlIgnore env sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+				return returnValue;
+			}
+
+			//忽略mybatis的mapperId的对应的查询日志
+			ignoreSqlIds=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreSqlId");
+			if(this.isIgnoreSqlId(sqlId, ignoreSqlIds)){
+				logger.debug("-----ignoreSqlId env sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+				return returnValue;
+			}
+			
+			
+			//忽略sql含有指定关键字的查询日志
+			ignoreSqlKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");
+			if(this.isContainIgnoreSqlKey(sql, ignoreSqlKey)){
+				logger.debug("-----ignoreSqlKey env sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
 				return returnValue;
 			}
 			
@@ -115,6 +133,22 @@ public class SqlInterceptor implements Interceptor {
 		}
 		return returnValue;
 
+	}
+	
+	private boolean isIgnoreSqlId(String sqlId, Set<String> ignoreSqlIdSet){
+		if(ignoreSqlIdSet==null||ignoreSqlIdSet.isEmpty()){
+			return false;
+		}
+		
+		String method=sqlId.substring(sqlId.lastIndexOf(".")+1);
+		String className=sqlId.substring(0, sqlId.lastIndexOf("."));
+		className=className.substring(className.lastIndexOf(".")+1);
+		String classMethod=className+"."+method;
+		if(ignoreSqlIdSet.contains(classMethod)){
+			return true;
+		}
+		
+		return false;
 	}
 	
 	private boolean isContainIgnoreSqlKey(final String sql, final Set<String> ignoreSqlKeySet){
@@ -279,8 +313,71 @@ public class SqlInterceptor implements Interceptor {
 		this.logSqlManager = logSqlManager;
 	}
 	
-	public void setProperties(Properties paramProperties){
+	public void setProperties(Properties properties){
+		Set<Map.Entry<Object,Object>> sets=properties.entrySet();
+		String key=null;
+		for(Map.Entry<Object,Object> entry:sets){
+			key=(String)entry.getKey();
+			if("sql.ignoreSqlId".equals(entry.getKey())){
+				String v=(String)entry.getValue();
+				configMap.put(entry.getKey(), this.getString2Set(key, v));
+			}
+			else if("sql.ignoreKey".equals(entry.getKey())){
+				String v=(String)entry.getValue();
+				configMap.put(entry.getKey(), this.getString2Set(key, v));
+			}
+			else{
+				configMap.put((String)entry.getKey(), entry.getValue());
+			}
+		}
+		logger.info("sqlIntercepter.properties="+configMap);
+	}
+	
+	/**
+	 * ModelMapper:create,insert 转成 ModelMapper.create,ModelMapper.insert
+	 * @param lines
+	 * @return
+	 */
+	private Set<String> getString2Set(String key, String lines){
+		Set<String> sets=new HashSet<String>();
+		if(!StringUtils.isEmpty(lines)){
+			lines=lines.trim();
+			String[] sqlIds=lines.split("\n");
+			for(String sqlId:sqlIds){
+				sqlId=sqlId.trim();
+				if(!"".equals(sqlId)){
+					addAllSqlIds(key, sqlId, sets);
+				}
+			}
+		}
 		
+		return sets;
+	}
+
+
+	/**
+	 * 根据配置的信息生成对应的每个方法的sqlId配置
+	 * ModelMapper:create,insert 转成 ModelMapper.create,ModelMapper.insert
+	 * @param sets
+	 * @param sqlId
+	 * @return
+	 */
+	private void addAllSqlIds(String key, String sqlId, Set<String> sets) {
+		String className="";
+		if("sql.ignoreSqlId".equals(key) && sqlId.indexOf(":")>0){
+			className=sqlId.substring(0, sqlId.indexOf(":"));
+			sqlId=sqlId.substring(sqlId.indexOf(":")+1);
+		}
+		String[] methods=sqlId.split(",");
+		for(String method:methods){
+			method=method.trim();
+			if(className.isEmpty()){
+				sets.add(method);
+			}
+			else{
+				sets.add(className+"."+method);
+			}
+		}
 	}
 
 }

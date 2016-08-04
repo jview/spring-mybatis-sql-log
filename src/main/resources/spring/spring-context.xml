@@ -17,7 +17,9 @@
 	<!-- 配置要扫描的包 -->
 	<context:component-scan base-package="org.jview.fwork.schedule,org.jview.fwork.basedata" />
 	
-	<!-- 系统配置参数 -->
+	<!-- 系统配置参数
+		sql.ignoreKey,sql.logSqlIgnore,sql.ignoreSqlId这三个参数的配置与spring-mybatis.xml中的配置效果一样，那个先起作用，这个再起作用。一般情况下任配一个就行了，效果一样。
+	 -->
 	<bean id="sysconfigs" class="org.jview.fwork.basedata.util.Sysconfigs">
 		<property name="properties">
 			<props>  
