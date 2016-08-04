@@ -49,7 +49,11 @@ public class LogSqlManagerService implements ILogSqlManager {
 	
 
 	
-	private boolean isIgnore(final String operType, final String sql, final String logSqlIgnore){
+	private boolean isIgnore(final Exception exp, final String operType, final String sql, final String logSqlIgnore){
+		// 如果是异常就不忽略
+		if(exp!=null){
+			return false;
+		}
 		if(logSqlIgnore==null){
 			return false;
 		}
@@ -86,7 +90,7 @@ public class LogSqlManagerService implements ILogSqlManager {
 			logDb.setJsonRet(sql);
 			logDb.setServiceId(-1l);
 			String logSqlIgnore=(String)Sysconfigs.getEnvMap().get("sql.logSqlIgnore");
-			if(exp==null && isIgnore(logDb.getOperType(), sql, logSqlIgnore)){
+			if(isIgnore(exp, logDb.getOperType(), sql, logSqlIgnore)){
 				logger.debug("-----logSqlIgnore sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
 				return;
 			}
@@ -252,7 +256,11 @@ public class LogSqlManagerService implements ILogSqlManager {
 		return ip;
 	}
 	
-	private boolean isContainIgnoreSqlKey(final String sql, final Set<String> ignoreSqlKeySet){
+	private boolean isContainIgnoreSqlKey(final Exception exp, final String sql, final Set<String> ignoreSqlKeySet){
+		// 如果是异常就不忽略
+		if(exp!=null){
+			return false;
+		}
 		if(ignoreSqlKeySet==null){
 			return false;
 		}
@@ -287,7 +295,7 @@ public class LogSqlManagerService implements ILogSqlManager {
 		
 		
 		Set<String> ignoreKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");
-		if(isContainIgnoreSqlKey(sql, ignoreKey)){
+		if(isContainIgnoreSqlKey(exp, sql, ignoreKey)){
 			logger.debug("-----ignoreKey sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
 			return;
 		}
