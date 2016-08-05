@@ -274,9 +274,12 @@ public class LogSqlManagerService implements ILogSqlManager {
 		return false;
 	}
 	
-	private Integer getConfigValue(String key){
-		Map<String, Object> envMap=Sysconfigs.getEnvMap();
-		Object v=envMap.get(key);
+	private Integer getConfigValue(final String key, final Integer defaultValue){
+		Object v=Sysconfigs.getEnvMap().get(key);
+		if(v==null){
+//			logger.warn(" key="+key+" is null");
+			return defaultValue;
+		}
 		
 		Integer logInfo=0;
 		if(v instanceof Integer){
@@ -300,14 +303,8 @@ public class LogSqlManagerService implements ILogSqlManager {
 			return;
 		}
 
-		Integer logInfo=this.getConfigValue("sql.logInfo");
-		Integer logWarn=this.getConfigValue("sql.logWarn");
-		if(logInfo==null){
-			logInfo=0;
-		}
-		if(logWarn==null){
-			logWarn=2000;
-		}
+		Integer logInfo=this.getConfigValue("sql.logInfo", 0);
+		Integer logWarn=this.getConfigValue("sql.logWarn", 2000);
 		
 		Integer logLevel=2;
 		if(exp!=null){
@@ -351,14 +348,9 @@ public class LogSqlManagerService implements ILogSqlManager {
 //		}
 		
 		
-		Integer logInfo=this.getConfigValue("sql.logInfo");
-		Integer logWarn=this.getConfigValue("sql.logWarn");
-		if(logInfo==null){
-			logInfo=0;
-		}
-		if(logWarn==null){
-			logWarn=2000;
-		}
+		Integer logInfo=this.getConfigValue("sql.logInfo", 0);
+		Integer logWarn=this.getConfigValue("sql.logWarn", 2000);
+
 		
 		Integer logLevel=2;
 		if(exp!=null){

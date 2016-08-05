@@ -99,10 +99,7 @@ public class SqlInterceptor implements Interceptor {
 				return returnValue;
 			}
 			
-			Integer logInfo=this.getConfigValue("sql.logInfo");
-			if(logInfo==null){
-				logInfo=0;
-			}
+			Integer logInfo=this.getConfigValue("sql.logInfo", 0);
 			if(runTime<logInfo){
 				logger.debug("-----logInfo env sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
 				return returnValue;
@@ -388,9 +385,12 @@ public class SqlInterceptor implements Interceptor {
 		}
 	}
 	
-	private Integer getConfigValue(String key){
-		Map<String, Object> envMap=Sysconfigs.getEnvMap();
-		Object v=envMap.get(key);
+	private Integer getConfigValue(final String key, final Integer defaultValue){
+		Object v=Sysconfigs.getEnvMap().get(key);
+		if(v==null){
+//			logger.warn(" key="+key+" is null");
+			return defaultValue;
+		}
 		
 		Integer logInfo=0;
 		if(v instanceof Integer){
