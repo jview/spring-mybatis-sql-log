@@ -99,6 +99,14 @@ public class SqlInterceptor implements Interceptor {
 				return returnValue;
 			}
 			
+			Integer logInfo=this.getConfigValue("sql.logInfo");
+			if(logInfo==null){
+				logInfo=0;
+			}
+			if(runTime<logInfo){
+				logger.debug("-----logInfo env sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+				return returnValue;
+			}
 			
 			//忽略指定的查询类型
 			String logSqlIgnore=(String)Sysconfigs.getEnvMap().get("sql.logSqlIgnore");
@@ -378,6 +386,21 @@ public class SqlInterceptor implements Interceptor {
 				sets.add(className+"."+method);
 			}
 		}
+	}
+	
+	private Integer getConfigValue(String key){
+		Map<String, Object> envMap=Sysconfigs.getEnvMap();
+		Object v=envMap.get(key);
+		
+		Integer logInfo=0;
+		if(v instanceof Integer){
+			logInfo=(Integer)v;
+		}
+		else{
+			logInfo=Integer.parseInt(""+v);
+		}
+		return logInfo;
+		
 	}
 
 }
