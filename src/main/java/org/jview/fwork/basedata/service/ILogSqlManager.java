@@ -8,7 +8,7 @@ public interface ILogSqlManager {
 	
 	public void addLogSqlAsync(Date startTime, String sqlId, String sql, long runTime, Exception exp, HashMap<String, Object> paramMap);
 	
-	public void addLogAsync(Date startTime, long runTime, Exception exp, HashMap<String, Object> paramMap);
+	public void addLogServiceAsync(Date startTime, long runTime, Exception exp, HashMap<String, Object> paramMap);
 	
 	
 }

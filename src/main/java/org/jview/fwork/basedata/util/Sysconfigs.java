@@ -40,6 +40,10 @@ public class Sysconfigs {
 				String v=(String)entry.getValue();
 				envMap.put(entry.getKey(), this.getString2Set(key, v));
 			}
+			else if("service.ignoreIntfKey".equals(entry.getKey())){
+				String v=(String)entry.getValue();
+				envMap.put(entry.getKey(), this.getString2Set(key, v));
+			}
 			else{
 				envMap.put((String)entry.getKey(), entry.getValue());
 			}

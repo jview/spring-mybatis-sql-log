@@ -98,11 +98,11 @@ public class LogServiceAspect {
 			}
 //			long runTime2=System.currentTimeMillis() - time;
 //			System.out.println("----service.runTime="+runTime+"/"+runTime2);
-			this.logSqlManager.addLogAsync(startTime, runTime, null, pointMap);
+			this.logSqlManager.addLogServiceAsync(startTime, runTime, null, pointMap);
 		}
 		catch (Exception e) {
 			long runTime=System.currentTimeMillis() - time;
-			this.logSqlManager.addLogAsync(startTime, runTime, e, pointMap);
+			this.logSqlManager.addLogServiceAsync(startTime, runTime, e, pointMap);
 			throw e;
 		}
 		return returnValue;

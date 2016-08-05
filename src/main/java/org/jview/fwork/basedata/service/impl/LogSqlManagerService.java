@@ -97,6 +97,11 @@ public class LogSqlManagerService implements ILogSqlManager {
 		}
 		else{
 			model=this.prepareModel(paramMap);
+			Set<String> ignoreIntfKeySet=(Set<String>)Sysconfigs.getEnvMap().get("service.ignoreIntfKey");
+			if(this.isContainIgnoreIntfKey(model, ignoreIntfKeySet)){
+				logger.debug("-----ignoreIntfKey method:="+paramMap.get("method")+":"+runTime+"ms");
+				return;
+			}
 			logDb.setServiceId(0l);
 			logDb.setJsonRet((String)paramMap.get("returnValue"));
 			LogService logService=(LogService)paramMap.get("logService");
@@ -274,6 +279,16 @@ public class LogSqlManagerService implements ILogSqlManager {
 		return false;
 	}
 	
+	private boolean isContainIgnoreIntfKey(final ModelPO model, final Set<String> ignoreIntfKeySet){
+		if(ignoreIntfKeySet==null){
+			return false;
+		}
+		if(ignoreIntfKeySet.contains(model.getClassName()+"."+model.getFuncCode())){
+			return true;
+		}
+		return false;
+	}
+	
 	private Integer getConfigValue(final String key, final Integer defaultValue){
 		Object v=Sysconfigs.getEnvMap().get(key);
 		if(v==null){
@@ -297,27 +312,22 @@ public class LogSqlManagerService implements ILogSqlManager {
 			, final long runTime, final Exception exp, final HashMap<String, Object> paramMap){
 		
 		
-		Set<String> ignoreKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");
-		if(isContainIgnoreSqlKey(exp, sql, ignoreKey)){
-			logger.debug("-----ignoreKey sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
-			return;
-		}
-
+//		Set<String> ignoreKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");
+//		if(isContainIgnoreSqlKey(exp, sql, ignoreKey)){
+//			logger.debug("-----ignoreKey sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+//			return;
+//		}
+		
 		Integer logInfo=this.getConfigValue("sql.logInfo", 0);
 		Integer logWarn=this.getConfigValue("sql.logWarn", 2000);
 		
-		Integer logLevel=2;
-		if(exp!=null){
-			logLevel=4;
+		if(runTime<logInfo){
+			logger.debug("-----logSqlIgnore sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
+			return;
 		}
-		else if(runTime>=logWarn){
-			logLevel=3;
-		}
-		else if(runTime>=logInfo){
-			logLevel=2;
-		}
+
+		final Integer level=this.getLogLevelByConfigTime(runTime, logInfo, logWarn, exp);
 		
-		final Integer level=logLevel;
 		ServerUtil.logPoolSize(this.getClass().getSimpleName()+".taskExecutor", taskExecutor, 0);
 		taskExecutor.execute(new Runnable() {
 			public void run() {
@@ -337,33 +347,24 @@ public class LogSqlManagerService implements ILogSqlManager {
 
 
 	@Override
-	public void addLogAsync(Date startTime, long runTime, Exception exp,
+	public void addLogServiceAsync(Date startTime, long runTime, Exception exp,
 			HashMap<String, Object> paramMap) {
 
-		Set<String> ignoreKey=(Set<String>)Sysconfigs.getEnvMap().get("sql.ignoreKey");
-		
-//		if(!isContainIgnoreSqlKey(sql, ignoreKey)){
-//			logger.debug(sqlId+":"+sql+":"+runTime+"ms");
+//		if(isContainIgnoreSqlKey(exp, sql, ignoreKey)){
+//			logger.debug("-----ignoreKey sqlId="+sqlId+":"+runTime+"ms"+":"+sql);
 //			return;
 //		}
 		
+		Integer logInfo=this.getConfigValue("service.logInfo", 0);
+		Integer logWarn=this.getConfigValue("service.logWarn", 2000);
 		
-		Integer logInfo=this.getConfigValue("sql.logInfo", 0);
-		Integer logWarn=this.getConfigValue("sql.logWarn", 2000);
-
-		
-		Integer logLevel=2;
-		if(exp!=null){
-			logLevel=4;
-		}
-		else if(runTime>=logWarn){
-			logLevel=3;
-		}
-		else if(runTime>=logInfo){
-			logLevel=2;
+		if(runTime<logInfo){
+			logger.debug("-----ignore.logInfo method="+paramMap.get("method")+":"+runTime+"ms");
+			return;
 		}
 		
-		final Integer level=logLevel;
+		final Integer level=this.getLogLevelByConfigTime(runTime, logInfo, logWarn, exp);
+		
 		ServerUtil.logPoolSize(this.getClass().getSimpleName()+".taskExecutor", taskExecutor, 0);
 		taskExecutor.execute(new Runnable() {
 			public void run() {
@@ -377,6 +378,26 @@ public class LogSqlManagerService implements ILogSqlManager {
 			}
 		});
 		
+	}
+	
+	/**
+	 * @param runTime
+	 * @param exp
+	 * @return
+	 */
+	private Integer getLogLevelByConfigTime(final long runTime, Integer logInfo, Integer logWarn, final Throwable exp) {
+
+		Integer logLevel=2;
+		if(exp!=null){
+			logLevel=4;
+		}
+		else if(runTime>=logWarn){
+			logLevel=3;
+		}
+		else if(runTime>=logInfo){
+			logLevel=2;
+		}
+		return logLevel;
 	}
 	
 	public void setProperties(Properties properties0) {

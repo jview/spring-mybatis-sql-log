@@ -33,6 +33,11 @@
                 </prop>
                 <prop key="sql.logInfo">0</prop>
                 <prop key="sql.logWarn">2000</prop>
+                <prop key="service.logInfo">0</prop>
+                <prop key="service.logWarn">2000</prop>
+                <prop key="service.ignoreIntfKey">
+                	LogDbService:log,info
+                </prop>
             </props>
          </property>
 	</bean>
