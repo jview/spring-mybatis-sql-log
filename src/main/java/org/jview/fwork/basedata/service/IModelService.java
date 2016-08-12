@@ -9,7 +9,7 @@ import ai.yc.common.core.service.IBaseService;
 public interface IModelService  extends IBaseService<ModelPO> {
 	public ModelPO findModelById(Long id);
 	
-	public RetResult<ModelPO> findModelByCode(String className, String funcCode);
+	public RetResult<ModelPO> findModelByCode(String packageName, String className, String funcCode);
 
 	public PageVO<ModelPO> findPageByModel(ModelPO search, PageVO<ModelPO> page);
 	

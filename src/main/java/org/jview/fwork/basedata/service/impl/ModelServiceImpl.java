@@ -61,10 +61,11 @@ public class ModelServiceImpl extends BaseService<ModelPO> implements IModelServ
 	 * @return
 	 */
 	
-	public RetResult<ModelPO> findModelByCode(String className, String funcCode){
+	public RetResult<ModelPO> findModelByCode(String packageName, String className, String funcCode){
 		RetResult<ModelPO> ret = new RetResult<>();
 		Example example = new Example(ModelPO.class);
 		Example.Criteria criteria = example.createCriteria();
+		criteria.andEqualTo("packageName", packageName);
 		criteria.andEqualTo("className", className);
 		criteria.andEqualTo("funcCode", funcCode);
 		List<ModelPO> list=this.selectByExample(example);

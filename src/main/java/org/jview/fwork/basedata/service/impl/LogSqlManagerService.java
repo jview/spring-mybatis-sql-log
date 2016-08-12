@@ -23,6 +23,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.Module;
+
 import ai.yc.common.core.data.RetResult;
 import ai.yc.common.core.util.ServerUtil;
 
@@ -145,7 +147,7 @@ public class LogSqlManagerService implements ILogSqlManager {
 		String key=model.getPackageName()+"."+model.getClassName()+"."+model.getFuncCode();
 		Long modelId=modelIdMap.get(key);
 		if(modelId==null){
-			RetResult<ModelPO> ret=this.modelService.findModelByCode(model.getClassName(), model.getFuncCode());
+			RetResult<ModelPO> ret=this.modelService.findModelByCode(model.getPackageName(), model.getClassName(), model.getFuncCode());
 			if(ret.isSuccess() && ret.getSize()>0){
 				modelId=ret.getFirstData().getCid();
 			}
